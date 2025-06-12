@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CHANGELOG.md
+*.md
+
+# Docker files (except Dockerfile)
+docker-compose*.yml
+.dockerignore
+
+# Development tools
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Dependencies (will be installed in container)
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Testing
+.phpunit.result.cache
+coverage/
+.nyc_output
+
+# Storage and cache
+storage/app/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+public/hot
+public/storage
+public/build
+
+# IDE files
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+
+# Backup files
+*.backup
+*.bak
+
+# OS generated files
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

@@ -1,0 +1,20 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - config
+        - database
+        - routes
+        - tests
+
+    # Level 6 provides good analysis while allowing faster development
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+        
+    excludePaths:
+        - ./vendor
+        - ./storage
+        - ./bootstrap/cache
