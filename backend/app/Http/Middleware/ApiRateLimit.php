@@ -6,15 +6,15 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Cache\RateLimiter;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
-class ApiRateLimit
+final class ApiRateLimit
 {
     public function __construct(
-        protected RateLimiter $limiter
+        private readonly RateLimiter $limiter
     ) {}
 
     /**
@@ -39,19 +39,21 @@ class ApiRateLimit
     /**
      * Resolve request signature for rate limiting.
      */
-    protected function resolveRequestSignature(Request $request): string
+    private function resolveRequestSignature(Request $request): string
     {
         if ($user = $request->user()) {
-            return 'api:user:' . $user->id;
+            return 'api:user:'.$user->id;
         }
 
-        return 'api:ip:' . $request->ip();
+        return 'api:ip:'.$request->ip();
     }
 
     /**
      * Get rate limit configuration.
+     *
+     * @return array<mixed>
      */
-    protected function getLimitConfig(string $limit): array
+    private function getLimitConfig(string $limit): array
     {
         $configs = [
             'api' => config('security.api', ['attempts' => 60, 'decay_seconds' => 60]),
@@ -62,11 +64,11 @@ class ApiRateLimit
 
         return $configs[$limit] ?? $configs['api'];
     }
-    
+
     /**
      * Build rate limit exceeded response.
      */
-    protected function buildResponse(string $key, int $maxAttempts): JsonResponse
+    private function buildResponse(string $key, int $maxAttempts): JsonResponse
     {
         $retryAfter = $this->limiter->availableIn($key);
 
@@ -84,7 +86,7 @@ class ApiRateLimit
     /**
      * Add rate limit headers to response.
      */
-    protected function addHeaders(ResponseAlias $response, int $maxAttempts, string $key): ResponseAlias
+    private function addHeaders(ResponseAlias $response, int $maxAttempts, string $key): ResponseAlias
     {
         $remaining = $this->limiter->remaining($key, $maxAttempts);
         $retryAfter = $this->limiter->availableIn($key);

@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Cors
+final class Cors
 {
     /**
      * Handle an incoming request.
@@ -31,7 +31,7 @@ class Cors
     private function handlePreflightRequest(Request $request): Response
     {
         $response = response('', 200);
-        
+
         return $this->addCorsHeaders($request, $response);
     }
 
@@ -41,7 +41,7 @@ class Cors
     private function addCorsHeaders(Request $request, Response $response): Response
     {
         $config = config('security.cors', []);
-        
+
         $origin = $request->header('Origin');
         $allowedOrigins = $config['allowed_origins'] ?? ['*'];
 
@@ -60,7 +60,7 @@ class Cors
             implode(', ', $config['allowed_headers'] ?? ['*'])
         );
 
-        if (!empty($config['exposed_headers'])) {
+        if (! empty($config['exposed_headers'])) {
             $response->headers->set(
                 'Access-Control-Expose-Headers',
                 implode(', ', $config['exposed_headers'])

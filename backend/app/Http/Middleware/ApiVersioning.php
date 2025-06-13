@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiVersioning
+final class ApiVersioning
 {
     /**
      * Handle an incoming request.
@@ -23,11 +23,11 @@ class ApiVersioning
 
         // Check if version is supported
         $supportedVersions = $config['supported_versions'] ?? ['v1'];
-        
-        if (!in_array($version, $supportedVersions)) {
+
+        if (! in_array($version, $supportedVersions)) {
             return response()->json([
                 'error' => 'Unsupported API version',
-                'message' => "API version '{$version}' is not supported.",
+                'message' => sprintf("API version '%s' is not supported.", $version),
                 'supported_versions' => $supportedVersions,
             ], 400);
         }
@@ -51,7 +51,7 @@ class ApiVersioning
     /**
      * Resolve API version from request.
      */
-    protected function resolveApiVersion(Request $request): string
+    private function resolveApiVersion(Request $request): string
     {
         // Check Accept header first (e.g., application/vnd.forkflash.v1+json)
         $acceptHeader = $request->header('Accept', '');

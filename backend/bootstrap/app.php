@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,23 +17,23 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Global middleware for all requests
         $middleware->append([
-            \App\Http\Middleware\SecurityHeaders::class,
-            \App\Http\Middleware\SanitizeInput::class,
+            App\Http\Middleware\SecurityHeaders::class,
+            App\Http\Middleware\SanitizeInput::class,
         ]);
 
         // API middleware group
         $middleware->api(append: [
-            \App\Http\Middleware\Cors::class,
-            \App\Http\Middleware\ApiVersioning::class,
-            \App\Http\Middleware\ApiRateLimit::class,
+            App\Http\Middleware\Cors::class,
+            App\Http\Middleware\ApiVersioning::class,
+            App\Http\Middleware\ApiRateLimit::class,
         ]);
 
         // Rate limit aliases for different endpoints
         $middleware->alias([
-            'rate.limit.api' => \App\Http\Middleware\ApiRateLimit::class . ':api',
-            'rate.limit.auth.login' => \App\Http\Middleware\ApiRateLimit::class . ':auth:login',
-            'rate.limit.auth.register' => \App\Http\Middleware\ApiRateLimit::class . ':auth:register',
-            'rate.limit.auth.password_reset' => \App\Http\Middleware\ApiRateLimit::class . ':auth:password_reset',
+            'rate.limit.api' => App\Http\Middleware\ApiRateLimit::class.':api',
+            'rate.limit.auth.login' => App\Http\Middleware\ApiRateLimit::class.':auth:login',
+            'rate.limit.auth.register' => App\Http\Middleware\ApiRateLimit::class.':auth:register',
+            'rate.limit.auth.password_reset' => App\Http\Middleware\ApiRateLimit::class.':auth:password_reset',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

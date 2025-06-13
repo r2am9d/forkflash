@@ -87,7 +87,7 @@ if [ -d "backend" ]; then
     
     # Step 4: Run tests with Pest
     echo "🧪 Running tests with Pest..."
-    if ! php -d memory_limit=1G vendor/bin/pest --no-interaction; then
+    if ! php -d memory_limit=1G vendor/bin/pest; then
         echo "❌ Tests failed. Please fix the failing tests before pushing."
         echo "💡 Run 'npm run backend:test' locally to debug test failures."
         exit 1

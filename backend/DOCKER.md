@@ -15,10 +15,10 @@ backend/
     │   ├── development.conf       # Dev Nginx config (debugging enabled)
     │   └── production.conf        # Prod Nginx config (security hardened)
     ├── php/
-    │   ├── development.ini        # Dev PHP config (Xdebug, high limits)
+    │   ├── development.ini        # Dev PHP config (high limits, debugging)
     │   └── production.ini         # Prod PHP config (OPcache, security)
     ├── postgres/
-    │   └── init.sql              # Dev database initialization
+    │   └── init.sql              # Database initialization for development
     └── supervisor/
         └── supervisord.conf      # Production process management
 ```

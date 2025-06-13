@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SanitizeInput
+final class SanitizeInput
 {
     /**
      * Handle an incoming request.
@@ -25,7 +25,7 @@ class SanitizeInput
     /**
      * Sanitize request data.
      */
-    protected function sanitizeRequestData(Request $request): void
+    private function sanitizeRequestData(Request $request): void
     {
         // Sanitize all input data
         $request->merge($this->sanitizeArray($request->all()));
@@ -39,8 +39,11 @@ class SanitizeInput
 
     /**
      * Recursively sanitize array data.
+     *
+     * @param  array<mixed>  $data
+     * @return array<mixed>
      */
-    protected function sanitizeArray(array $data): array
+    private function sanitizeArray(array $data): array
     {
         $sanitized = [];
 
@@ -62,7 +65,7 @@ class SanitizeInput
     /**
      * Sanitize string input.
      */
-    protected function sanitizeString(string $input): string
+    private function sanitizeString(string $input): string
     {
         // Remove null bytes
         $input = str_replace(chr(0), '', $input);
@@ -71,7 +74,7 @@ class SanitizeInput
         $input = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $input);
 
         // Trim whitespace
-        $input = trim($input);
+        $input = mb_trim((string) $input);
 
         // Remove potential XSS vectors
         $input = strip_tags($input);
@@ -79,8 +82,8 @@ class SanitizeInput
         // Remove potential SQL injection vectors
         $input = str_replace([
             'UNION', 'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE', 'ALTER',
-            'EXEC', 'EXECUTE', 'SCRIPT', 'JAVASCRIPT', 'VBSCRIPT', 'ONLOAD', 'ONERROR'
-        ], '', strtoupper($input));
+            'EXEC', 'EXECUTE', 'SCRIPT', 'JAVASCRIPT', 'VBSCRIPT', 'ONLOAD', 'ONERROR',
+        ], '', mb_strtoupper($input));
 
         return $input;
     }
