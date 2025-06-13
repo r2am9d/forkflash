@@ -72,7 +72,7 @@ test_tools() {
     
     # Test Rector config loading
     print_info "Testing Rector config loading..."
-    if docker compose -f docker-compose.dev.yml exec app php vendor/bin/rector process --config=rector.php --dry-run --no-progress-bar > /dev/null 2>&1; then
+    if docker compose -f docker-compose.dev.yml exec app php -d memory_limit=1G vendor/bin/rector process --config=rector.php --dry-run --no-progress-bar > /dev/null 2>&1; then
         print_success "Rector loads rector.php correctly"
     else
         print_error "Rector failed to load rector.php"
@@ -81,7 +81,7 @@ test_tools() {
     
     # Test Pint config loading
     print_info "Testing Pint config loading..."
-    if docker compose -f docker-compose.dev.yml exec app php vendor/bin/pint --config=pint.json --test > /dev/null 2>&1; then
+    if docker compose -f docker-compose.dev.yml exec app php -d memory_limit=1G vendor/bin/pint --config=pint.json --test > /dev/null 2>&1; then
         print_success "Pint loads pint.json correctly"
     else
         print_error "Pint failed to load pint.json"
@@ -90,7 +90,7 @@ test_tools() {
     
     # Test PHPStan config loading
     print_info "Testing PHPStan config loading..."
-    if docker compose -f docker-compose.dev.yml exec app php vendor/bin/phpstan analyse --configuration=phpstan.neon --no-progress > /dev/null 2>&1; then
+    if docker compose -f docker-compose.dev.yml exec app php -d memory_limit=1G vendor/bin/phpstan analyse --configuration=phpstan.neon --no-progress > /dev/null 2>&1; then
         print_success "PHPStan loads phpstan.neon correctly"
     else
         print_error "PHPStan failed to load phpstan.neon"
@@ -99,7 +99,7 @@ test_tools() {
     
     # Test Pest config loading
     print_info "Testing Pest config loading..."
-    if docker compose -f docker-compose.dev.yml exec app php vendor/bin/pest --list-tests > /dev/null 2>&1; then
+    if docker compose -f docker-compose.dev.yml exec app php -d memory_limit=1G vendor/bin/pest --parallel --list-tests > /dev/null 2>&1; then
         print_success "Pest loads pest.php correctly"
     else
         print_error "Pest failed to load pest.php"

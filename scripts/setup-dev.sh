@@ -78,7 +78,7 @@ if [ -d "backend" ]; then
     
     # Step 3: Run PHPStan analysis (should pass after fixes)
     echo "🔍 Running PHPStan static analysis..."
-    if ! php -d memory_limit=1G vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=1G --no-progress; then
+    if ! php -d memory_limit=1G vendor/bin/phpstan analyse --configuration=phpstan.neon --no-progress; then
         echo "❌ Static analysis failed even after auto-fixes."
         echo "💡 Some issues require manual intervention. Check the output above."
         echo "💡 Run 'npm run backend:analyse' locally to see detailed errors."
@@ -87,7 +87,7 @@ if [ -d "backend" ]; then
     
     # Step 4: Run tests with Pest
     echo "🧪 Running tests with Pest..."
-    if ! php -d memory_limit=1G vendor/bin/pest; then
+    if ! php -d memory_limit=1G vendor/bin/pest --parallel; then
         echo "❌ Tests failed. Please fix the failing tests before pushing."
         echo "💡 Run 'npm run backend:test' locally to debug test failures."
         exit 1
