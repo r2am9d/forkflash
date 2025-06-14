@@ -6,12 +6,27 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string|null $remember_token
+ * @property Carbon|null $email_verified_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Recipe> $recipes
+ * @property-read Collection<int, GroceryList> $groceryLists
+ */
 final class User extends Authenticatable
 {
     use HasApiTokens;
@@ -50,6 +65,26 @@ final class User extends Authenticatable
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class);
+    }
+
+    /**
+     * Get the grocery lists for the user.
+     *
+     * @return HasMany<GroceryList, $this>
+     */
+    public function groceryLists(): HasMany
+    {
+        return $this->hasMany(GroceryList::class);
+    }
+
+    /**
+     * Get all grocery lists accessible by this user (owned + shared).
+     *
+     * @return Builder<GroceryList>
+     */
+    public function accessibleGroceryLists(): Builder
+    {
+        return GroceryList::accessibleBy($this);
     }
 
     /**

@@ -9,7 +9,9 @@ use Database\Factories\RecipeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -32,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read Pivot $pivot
  */
 final class Recipe extends Model
 {
@@ -114,6 +117,31 @@ final class Recipe extends Model
     public function primaryImage(): HasMany
     {
         return $this->hasMany(RecipeImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * Get the grocery lists that include this recipe.
+     *
+     * @return BelongsToMany<GroceryList, $this>
+     */
+    public function groceryLists(): BelongsToMany
+    {
+        return $this->belongsToMany(GroceryList::class, 'grocery_list_recipes')
+            ->withPivot(['servings', 'selected_item_ids', 'auto_generated'])
+            ->withTimestamps()
+            ->withCasts([
+                'selected_item_ids' => 'array',
+            ]);
+    }
+
+    /**
+     * Get grocery items generated from this recipe.
+     *
+     * @return HasMany<GroceryItem, $this>
+     */
+    public function groceryItems(): HasMany
+    {
+        return $this->hasMany(GroceryItem::class);
     }
 
     /**

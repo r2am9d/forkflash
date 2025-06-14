@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\GroceryItem;
+use App\Observers\GroceryItemObserver;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
@@ -21,6 +23,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register model observers
+        GroceryItem::observe(GroceryItemObserver::class);
     }
 }

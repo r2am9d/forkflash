@@ -21,9 +21,20 @@ final class DatabaseSeeder extends Seeder
             UserSeeder::class,
         ]);
 
+        // Seed units before recipes and grocery items (required for unit_id foreign keys)
+        $this->call([
+            UnitSeeder::class,
+        ]);
+
         // Then seed recipes with instructions and images
         $this->call([
             RecipeSeeder::class,
+        ]);
+
+        // Finally seed grocery lists and items
+        $this->call([
+            GroceryListSeeder::class,
+            GroceryItemSeeder::class,
         ]);
 
         $this->command->info('Database seeding completed successfully!');
