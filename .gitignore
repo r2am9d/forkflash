@@ -64,6 +64,8 @@ mobile/android/app/release
 *.env.docker
 
 # Misc
+.github
 .husky/
 projectplan.md
 RULES.md
+MIGRATION.md
