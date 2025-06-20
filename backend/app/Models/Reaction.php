@@ -7,9 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
-class RecipeReaction extends Model
+class Reaction extends Model
 {
     use HasFactory;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'recipe_reactions';
 
     protected $fillable = [
         'recipe_id',
@@ -21,13 +26,13 @@ class RecipeReaction extends Model
         'type' => 'string',
     ];
 
-    // Relationship: RecipeReaction belongs to Recipe
+    // Relationship: Reaction belongs to Recipe
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);
     }
 
-    // Relationship: RecipeReaction belongs to User
+    // Relationship: Reaction belongs to User
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

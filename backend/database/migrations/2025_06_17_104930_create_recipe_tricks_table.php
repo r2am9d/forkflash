@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipe_tips', function (Blueprint $table) {
+        Schema::create('recipe_tricks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
-            $table->text('tip_text'); // The actual tip content
-            $table->integer('sort')->default(0); // Order to display tips (from JSON array order)
+            $table->text('content'); // The trick/note content
+            $table->enum('type', ['note', 'tip', 'trick', 'warning'])->default('trick'); // Type of content
+            $table->integer('sort')->default(0); // Display order (from JSON array order)
             $table->timestamps();
 
             // Indexes for performance
-            $table->index(['recipe_id', 'sort']); // Common query pattern
+            $table->index(['recipe_id', 'sort']); // Common query pattern for ordered display
+            $table->index(['recipe_id', 'type']); // Filter by content type
             $table->index('recipe_id'); // Basic recipe lookup
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipe_tips');
+        Schema::dropIfExists('recipe_tricks');
     }
 };

@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('recipe_equipments', function (Blueprint $table) {
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->foreignId('equipment_id')->constrained('equipments')->onDelete('cascade');
+            $table->integer('sort')->default(0);
 
             // Composite primary key - no need for separate ID
             $table->primary(['recipe_id', 'equipment_id']);
             
-            // Optimized index for lookups
-            $table->index(['equipment_id', 'recipe_id']); // For finding recipes by equipment
+            // Optimized indexes for lookups
+            $table->index(['recipe_id', 'sort']); // For ordered equipment lists
+            $table->index(['equipment_id']); // For finding recipes by equipment
         });
     }
 

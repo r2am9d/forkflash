@@ -7,12 +7,11 @@ namespace Database\Seeders;
 use App\Models\Ingredient;
 use App\Models\Nutrient;
 use App\Models\Recipe;
-use App\Models\RecipeImage;
-use App\Models\RecipeInstruction;
-use App\Models\RecipeNutrient;
+use App\Models\Image;
+use App\Models\Instruction;
 use App\Models\Unit;
 use App\Models\User;
-use Database\Factories\RecipeImageFactory;
+use Database\Factories\ImageFactory;
 use Illuminate\Database\Seeder;
 
 final class RecipeSeeder extends Seeder
@@ -84,10 +83,10 @@ final class RecipeSeeder extends Seeder
         $this->command->info('Recipe seeding completed!');
         $this->command->info('Created:');
         $this->command->info('- '.Recipe::count().' recipes');
-        $this->command->info('- '.RecipeInstruction::count().' instructions');
-        $this->command->info('- '.RecipeImage::count().' images');
+        $this->command->info('- '.Instruction::count().' instructions');
+        $this->command->info('- '.Image::count().' images');
         $this->command->info('- '.Recipe::whereHas('ingredients')->count().' recipes with ingredients');
-        $this->command->info('- '.RecipeNutrient::count().' recipe nutrients');
+        $this->command->info('- '.Recipe::whereHas('nutrients')->count().' recipes with nutrition data');
     }
 
     /**
@@ -146,7 +145,7 @@ final class RecipeSeeder extends Seeder
                 }
             }
 
-            RecipeInstruction::factory()
+            Instruction::factory()
                 ->step($i)
                 ->create([
                     'recipe_id' => $recipe->id,
@@ -157,8 +156,8 @@ final class RecipeSeeder extends Seeder
         // Create images (1-5 per recipe, first one is primary)
         $imageCount = fake()->numberBetween(1, 5);
         for ($i = 0; $i < $imageCount; ++$i) {
-            RecipeImage::factory()
-                ->when($i === 0, fn ($factory): RecipeImageFactory => $factory->primary())
+            Image::factory()
+                ->when($i === 0, fn ($factory): ImageFactory => $factory->primary())
                 ->order($i)
                 ->create([
                     'recipe_id' => $recipe->id,
@@ -170,18 +169,20 @@ final class RecipeSeeder extends Seeder
         $nutrientCount = fake()->numberBetween(min(5, $nutrients->count()), $maxNutrients);
         $selectedNutrients = $nutrients->random($nutrientCount);
 
+        $nutritionData = [];
         foreach ($selectedNutrients as $nutrient) {
             // Generate realistic nutrition values based on nutrient type
             $amount = $this->generateNutrientAmount($nutrient);
             $percentageDv = fake()->optional(0.7)->randomFloat(0, 1, 200); // 70% chance of having % DV
             
-            RecipeNutrient::create([
-                'recipe_id' => $recipe->id,
-                'nutrient_id' => $nutrient->id,
+            $nutritionData[$nutrient->id] = [
                 'amount' => $amount,
                 'percentage_dv' => $percentageDv,
-            ]);
+            ];
         }
+
+        // Attach nutrition data using pivot relationship
+        $recipe->nutrients()->attach($nutritionData);
     }
 
     /**

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipe_timing', function (Blueprint $table) {
+        Schema::create('recipe_durations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->unique()->constrained('recipes')->onDelete('cascade');
             $table->integer('prep_minutes')->nullable(); // Preparation time in minutes (from JSON "Prep: X minutes")
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipe_timing');
+        Schema::dropIfExists('recipe_durations');
     }
 };

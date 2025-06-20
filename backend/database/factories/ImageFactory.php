@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Recipe;
-use App\Models\RecipeImage;
+use App\Models\Image;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<RecipeImage>
+ * @extends Factory<Image>
  */
-final class RecipeImageFactory extends Factory
+final class ImageFactory extends Factory
 {
     /**
      * Define the model's default state.

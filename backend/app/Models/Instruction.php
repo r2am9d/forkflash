@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\HasUlids;
-use Database\Factories\RecipeInstructionFactory;
+use Database\Factories\InstructionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,13 +24,18 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Recipe $recipe
  */
-final class RecipeInstruction extends Model
+final class Instruction extends Model
 {
-    /** @use HasFactory<RecipeInstructionFactory> */
+    /** @use HasFactory<InstructionFactory> */
     use HasFactory;
 
     use HasUlids;
     use SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'recipe_instructions';
 
     /**
      * The attributes that are mass assignable.

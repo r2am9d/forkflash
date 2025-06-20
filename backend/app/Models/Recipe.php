@@ -84,31 +84,31 @@ final class Recipe extends Model
     /**
      * Get the instructions for the recipe.
      *
-     * @return HasMany<RecipeInstruction, $this>
+     * @return HasMany<Instruction, $this>
      */
     public function instructions(): HasMany
     {
-        return $this->hasMany(RecipeInstruction::class)->orderBy('sort');
+        return $this->hasMany(Instruction::class)->orderBy('sort');
     }
 
     /**
      * Get the images for the recipe.
      *
-     * @return HasMany<RecipeImage, $this>
+     * @return HasMany<Image, $this>
      */
     public function images(): HasMany
     {
-        return $this->hasMany(RecipeImage::class)->orderBy('sort');
+        return $this->hasMany(Image::class)->orderBy('sort');
     }
 
     /**
      * Get the primary image for the recipe.
      *
-     * @return HasMany<RecipeImage, $this>
+     * @return HasMany<Image, $this>
      */
     public function primaryImage(): HasMany
     {
-        return $this->hasMany(RecipeImage::class)->where('is_primary', true);
+        return $this->hasMany(Image::class)->where('is_primary', true);
     }
 
     /**
@@ -140,17 +140,19 @@ final class Recipe extends Model
      */
     public function equipments(): BelongsToMany
     {
-        return $this->belongsToMany(Equipment::class, 'recipe_equipments');
+        return $this->belongsToMany(Equipment::class, 'recipe_equipments')
+            ->withPivot(['sort'])
+            ->orderByPivot('sort');
     }
 
     /**
-     * Get the timing information for this recipe.
+     * Get the duration information for this recipe.
      *
-     * @return HasOne<RecipeTiming, $this>
+     * @return HasOne<Duration, $this>
      */
-    public function timing(): HasOne
+    public function duration(): HasOne
     {
-        return $this->hasOne(RecipeTiming::class);
+        return $this->hasOne(Duration::class);
     }
 
     /**
@@ -162,37 +164,26 @@ final class Recipe extends Model
     public function nutrients(): BelongsToMany
     {
         return $this->belongsToMany(Nutrient::class, 'recipe_nutrients')
-            ->withPivot(['amount', 'percentage_dv'])
-            ->withTimestamps();
+            ->withPivot(['amount', 'percentage_dv']);
     }
 
     /**
-     * Get the notes for this recipe.
+     * Get the tricks for this recipe (consolidates notes and tips).
      *
-     * @return HasMany<RecipeNote, $this>
+     * @return HasMany<Trick, $this>
      */
-    public function notes(): HasMany
+    public function tricks(): HasMany
     {
-        return $this->hasMany(RecipeNote::class)->orderBy('sort');
-    }
-
-    /**
-     * Get the tips for this recipe.
-     *
-     * @return HasMany<RecipeTip, $this>
-     */
-    public function tips(): HasMany
-    {
-        return $this->hasMany(RecipeTip::class)->orderBy('sort');
+        return $this->hasMany(Trick::class)->orderBy('sort');
     }
 
     /**
      * Get the reactions for this recipe.
      *
-     * @return HasMany<RecipeReaction, $this>
+     * @return HasMany<Reaction, $this>
      */
     public function reactions(): HasMany
     {
-        return $this->hasMany(RecipeReaction::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(Reaction::class)->orderBy('created_at', 'desc');
     }
 }

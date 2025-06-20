@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\RecipeImageFactory;
+use Database\Factories\ImageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,12 +22,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Recipe $recipe
  */
-final class RecipeImage extends Model
+final class Image extends Model
 {
-    /** @use HasFactory<RecipeImageFactory> */
+    /** @use HasFactory<ImageFactory> */
     use HasFactory;
 
     use SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'recipe_images';
 
     /**
      * The attributes that are mass assignable.
