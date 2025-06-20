@@ -87,12 +87,18 @@ final class UnitSeeder extends Seeder
             ['name' => 'bags', 'display_name' => 'Bags', 'unit_type' => 'count'],
             ['name' => 'box', 'display_name' => 'Box', 'unit_type' => 'count'],
             ['name' => 'boxes', 'display_name' => 'Boxes', 'unit_type' => 'count'],
+            
+            // Additional units from recipe data analysis
+            ['name' => 'stick', 'display_name' => 'Stick', 'unit_type' => 'count'],
+            ['name' => 'sticks', 'display_name' => 'Sticks', 'unit_type' => 'count'],
+            ['name' => 'strip', 'display_name' => 'Strip', 'unit_type' => 'count'],
+            ['name' => 'strips', 'display_name' => 'Strips', 'unit_type' => 'count'],
+            ['name' => 'leaf', 'display_name' => 'Leaf', 'unit_type' => 'count'],
+            ['name' => 'leaves', 'display_name' => 'Leaves', 'unit_type' => 'count'],
+            ['name' => 'stalk', 'display_name' => 'Stalk', 'unit_type' => 'count'],
+            ['name' => 'stalks', 'display_name' => 'Stalks', 'unit_type' => 'count'],
 
             // Size measurements
-            ['name' => 'small', 'display_name' => 'Small', 'unit_type' => 'size', 'abbreviation' => 'sm'],
-            ['name' => 'medium', 'display_name' => 'Medium', 'unit_type' => 'size', 'abbreviation' => 'med'],
-            ['name' => 'large', 'display_name' => 'Large', 'unit_type' => 'size', 'abbreviation' => 'lg'],
-            ['name' => 'extra large', 'display_name' => 'Extra Large', 'unit_type' => 'size', 'abbreviation' => 'xl'],
             ['name' => 'small', 'display_name' => 'Small', 'unit_type' => 'size', 'abbreviation' => 'sm'],
             ['name' => 'medium', 'display_name' => 'Medium', 'unit_type' => 'size', 'abbreviation' => 'med'],
             ['name' => 'large', 'display_name' => 'Large', 'unit_type' => 'size', 'abbreviation' => 'lg'],
@@ -110,6 +116,13 @@ final class UnitSeeder extends Seeder
             ['name' => 'handful', 'display_name' => 'Handful', 'unit_type' => 'special'],
             ['name' => 'splash', 'display_name' => 'Splash', 'unit_type' => 'special'],
             ['name' => 'drizzle', 'display_name' => 'Drizzle', 'unit_type' => 'special'],
+
+            // Nutrition measurements
+            ['name' => 'kcal', 'display_name' => 'Kilocalories', 'unit_type' => 'nutrition', 'abbreviation' => 'kcal'],
+            ['name' => 'mg', 'display_name' => 'Milligrams', 'unit_type' => 'nutrition', 'abbreviation' => 'mg'],
+            ['name' => 'IU', 'display_name' => 'International Units', 'unit_type' => 'nutrition', 'abbreviation' => 'IU'],
+            ['name' => 'mcg', 'display_name' => 'Micrograms', 'unit_type' => 'nutrition', 'abbreviation' => 'mcg'],
+            ['name' => '%', 'display_name' => 'Percent', 'unit_type' => 'nutrition', 'abbreviation' => '%'],
         ];
 
         foreach ($units as $unitData) {

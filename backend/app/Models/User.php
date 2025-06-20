@@ -25,7 +25,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Collection<int, Recipe> $recipes
- * @property-read Collection<int, GroceryList> $groceryLists
  */
 final class User extends Authenticatable
 {
@@ -65,26 +64,6 @@ final class User extends Authenticatable
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class);
-    }
-
-    /**
-     * Get the grocery lists for the user.
-     *
-     * @return HasMany<GroceryList, $this>
-     */
-    public function groceryLists(): HasMany
-    {
-        return $this->hasMany(GroceryList::class);
-    }
-
-    /**
-     * Get all grocery lists accessible by this user (owned + shared).
-     *
-     * @return Builder<GroceryList>
-     */
-    public function accessibleGroceryLists(): Builder
-    {
-        return GroceryList::accessibleBy($this);
     }
 
     /**

@@ -16,9 +16,9 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $ulid
  * @property int $recipe_id
- * @property int $step_number
+ * @property int $sort
  * @property string $text
- * @property array<mixed>|null $ingredients
+ * @property array<int>|null $ingredient_ids
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
@@ -40,9 +40,9 @@ final class RecipeInstruction extends Model
     protected $fillable = [
         'ulid',
         'recipe_id',
-        'step_number',
+        'sort',
         'text',
-        'ingredients',
+        'ingredient_ids',
     ];
 
     /**
@@ -51,8 +51,8 @@ final class RecipeInstruction extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'ingredients' => 'array',
-        'step_number' => 'integer',
+        'ingredient_ids' => 'array',
+        'sort' => 'integer',
     ];
 
     /**
@@ -63,5 +63,45 @@ final class RecipeInstruction extends Model
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);
+    }
+
+    /**
+     * Get the ingredients referenced in this instruction.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ingredient>
+     */
+    public function getReferencedIngredients()
+    {
+        if (empty($this->ingredient_ids)) {
+            return collect();
+        }
+
+        return $this->recipe->ingredients()->whereIn('ingredients.id', $this->ingredient_ids)->get();
+    }
+
+    /**
+     * Get ingredient IDs referenced in this instruction.
+     *
+     * @return array<int>
+     */
+    public function getIngredientIds(): array
+    {
+        return $this->ingredient_ids ?? [];
+    }
+
+    /**
+     * Check if this instruction references any ingredients.
+     */
+    public function hasIngredientReferences(): bool
+    {
+        return !empty($this->ingredient_ids);
+    }
+
+    /**
+     * Check if this instruction references a specific ingredient.
+     */
+    public function referencesIngredient(int $ingredientId): bool
+    {
+        return in_array($ingredientId, $this->ingredient_ids ?? []);
     }
 }

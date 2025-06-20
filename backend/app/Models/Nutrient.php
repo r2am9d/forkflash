@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -14,13 +15,10 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property string $unit
- * @property string $display_name
- * @property string $category
- * @property string|null $description
- * @property float|null $daily_value
+ * @property int $unit_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read Unit $unit
  */
 final class Nutrient extends Model
 {
@@ -34,11 +32,7 @@ final class Nutrient extends Model
     protected $fillable = [
         'name',
         'slug',
-        'unit',
-        'display_name',
-        'category',
-        'description',
-        'daily_value',
+        'unit_id',
     ];
 
     /**
@@ -47,7 +41,7 @@ final class Nutrient extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'daily_value' => 'decimal:2',
+        //
     ];
 
     /**
@@ -61,10 +55,17 @@ final class Nutrient extends Model
             if (empty($nutrient->slug)) {
                 $nutrient->slug = Str::slug($nutrient->name);
             }
-            if (empty($nutrient->display_name)) {
-                $nutrient->display_name = $nutrient->name;
-            }
         });
+    }
+
+    /**
+     * Get the unit for this nutrient.
+     *
+     * @return BelongsTo<Unit, $this>
+     */
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     /**
@@ -74,56 +75,8 @@ final class Nutrient extends Model
      */
     public function recipes(): BelongsToMany
     {
-        return $this->belongsToMany(Recipe::class, 'recipe_nutrient')
-            ->withPivot(['amount', 'per_serving', 'source', 'confidence_level', 'sort_order', 'is_active', 'verified_at', 'notes'])
+        return $this->belongsToMany(Recipe::class, 'recipe_nutrients')
+            ->withPivot(['amount', 'percentage_dv'])
             ->withTimestamps();
-    }
-
-    /**
-     * Scope to get nutrients by category.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @param string $category
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    public function scopeByCategory($query, string $category)
-    {
-        return $query->where('category', $category);
-    }
-
-    /**
-     * Get formatted daily value with unit.
-     */
-    public function getFormattedDailyValueAttribute(): ?string
-    {
-        if ($this->daily_value === null) {
-            return null;
-        }
-
-        return "{$this->daily_value}{$this->unit}";
-    }
-
-    /**
-     * Check if this is a macronutrient.
-     */
-    public function isMacronutrient(): bool
-    {
-        return $this->category === 'macronutrient';
-    }
-
-    /**
-     * Check if this is a vitamin.
-     */
-    public function isVitamin(): bool
-    {
-        return $this->category === 'vitamin';
-    }
-
-    /**
-     * Check if this is a mineral.
-     */
-    public function isMineral(): bool
-    {
-        return $this->category === 'mineral';
     }
 }

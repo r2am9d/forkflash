@@ -15,20 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100)->unique();
             $table->string('slug', 100)->unique();
-            $table->string('category', 50)->index(); // dietary, cooking-method, flavor, occasion, etc.
-            $table->text('description')->nullable();
             $table->string('color', 7)->default('#6B7280'); // Hex color for UI display
-            $table->boolean('is_dietary_restriction')->default(false);
-            $table->boolean('is_featured')->default(false);
-            $table->integer('usage_count')->default(0); // Track popularity
+            $table->integer('usage_count')->default(0)->unsigned(); // Track popularity for suggestions
             $table->timestamps();
-            $table->softDeletes();
 
-            // Performance indexes
-            $table->index(['category', 'is_featured']);
-            $table->index(['is_dietary_restriction']);
-            $table->index(['usage_count']);
-            $table->index(['name']);
+            // Simple performance indexes
+            $table->index(['usage_count']); // For popular tag suggestions
+            $table->index(['name']); // For tag search/autocomplete
         });
     }
 

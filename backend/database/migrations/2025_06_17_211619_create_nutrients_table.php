@@ -13,17 +13,12 @@ return new class extends Migration
     {
         Schema::create('nutrients', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100)->unique(); // "Protein", "Vitamin C", "Calories"
-            $table->string('slug', 120)->unique(); // "protein", "vitamin-c", "calories"
-            $table->string('unit', 20); // "g", "mg", "kcal", "IU", "%"
-            $table->string('display_name', 100); // "Protein", "Vitamin C", "Calories"
-            $table->enum('category', ['macronutrient', 'vitamin', 'mineral', 'other']);
-            $table->text('description')->nullable();
-            $table->decimal('daily_value', 8, 2)->nullable(); // RDA/DV for adults
+            $table->string('name', 100)->unique(); // "Serving", "Calories", "Protein"
+            $table->string('slug', 120)->unique(); // "serving", "calories", "protein"
+            $table->foreignId('unit_id')->constrained('units')->onDelete('restrict'); // Reference to units table
             $table->timestamps();
 
             // Indexes for performance
-            $table->index('category');
             $table->index('name');
         });
     }

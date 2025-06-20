@@ -24,7 +24,7 @@ final class RecipeImageFactory extends Factory
             'recipe_id' => Recipe::factory(),
             'url' => fake()->imageUrl(800, 600, 'food'),
             'is_primary' => false,
-            'sort_order' => 0,
+            'sort' => 0,
         ];
     }
 
@@ -44,7 +44,7 @@ final class RecipeImageFactory extends Factory
     public function order(int $order): static
     {
         return $this->state(fn (array $attributes): array => [
-            'sort_order' => $order,
+            'sort' => $order,
         ]);
     }
 

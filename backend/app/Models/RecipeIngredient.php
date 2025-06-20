@@ -16,9 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $ingredient_id
  * @property float|null $quantity
  * @property int|null $unit_id
- * @property string|null $preparation_notes
- * @property bool $is_optional
- * @property int $display_order
+ * @property string|null $notes
+ * @property int $sort
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * 
@@ -36,9 +35,8 @@ class RecipeIngredient extends Model
         'ingredient_id',
         'quantity',
         'unit_id',
-        'preparation_notes',
-        'is_optional',
-        'display_order',
+        'notes',
+        'sort',
     ];
 
     /**
@@ -46,8 +44,7 @@ class RecipeIngredient extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2',
-        'is_optional' => 'boolean',
-        'display_order' => 'integer',
+        'sort' => 'integer',
     ];
 
     /**
@@ -75,11 +72,11 @@ class RecipeIngredient extends Model
     }
 
     /**
-     * Scope to order ingredients by display order.
+     * Scope to order ingredients by sort order.
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('display_order');
+        return $query->orderBy('sort');
     }
 
     /**
@@ -129,8 +126,8 @@ class RecipeIngredient extends Model
 
         $parts[] = $this->ingredient->name;
 
-        if ($this->preparation_notes) {
-            $parts[] = $this->preparation_notes;
+        if ($this->notes) {
+            $parts[] = $this->notes;
         }
 
         return implode(' ', $parts);

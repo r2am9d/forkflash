@@ -12,23 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recipe_ingredients', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->foreignId('ingredient_id')->constrained('ingredients')->onDelete('cascade');
-            $table->decimal('quantity', 8, 2)->nullable();
-            $table->foreignId('unit_id')->nullable()->constrained('units')->onDelete('set null');
-            $table->string('preparation_notes', 255)->nullable()->comment('diced, chopped, etc.');
-            $table->boolean('is_optional')->default(false);
-            $table->integer('display_order')->default(0);
-            $table->timestamps();
+            $table->text('display_text')->comment('Original ingredient text');
+            $table->integer('sort')->default(0);
 
-            // Indexes for performance
-            $table->index(['recipe_id', 'display_order']);
-            $table->index(['ingredient_id']);
-            $table->index(['unit_id']);
+            // Composite primary key - no need for separate ID
+            $table->primary(['recipe_id', 'ingredient_id']);
             
-            // Prevent duplicate ingredient entries per recipe
-            $table->unique(['recipe_id', 'ingredient_id', 'display_order']);
+            // Optimized indexes for lookups
+            $table->index(['recipe_id', 'sort']); // For ordered ingredient lists
+            $table->index(['ingredient_id']); // For finding recipes by ingredient
         });
     }
 

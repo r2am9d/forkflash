@@ -12,17 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recipe_tags', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
-            $table->timestamps();
 
-            // Indexes for performance
-            $table->index(['recipe_id']);
-            $table->index(['tag_id']);
+            // Single composite primary key - no need for separate ID
+            $table->primary(['recipe_id', 'tag_id']);
             
-            // Prevent duplicate tag assignments per recipe
-            $table->unique(['recipe_id', 'tag_id']);
+            // Optimized indexes for lookups
+            $table->index(['tag_id', 'recipe_id']); // For finding recipes by tag
         });
     }
 

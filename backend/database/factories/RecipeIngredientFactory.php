@@ -39,9 +39,9 @@ class RecipeIngredientFactory extends Factory
             'ingredient_id' => Ingredient::factory(),
             'quantity' => $this->faker->randomFloat(2, 0.25, 10),
             'unit_id' => Unit::factory(),
-            'preparation_notes' => $this->faker->randomElement($preparations),
+            'notes' => $this->faker->randomElement($preparations),
             'is_optional' => $this->faker->boolean(20), // 20% chance of being optional
-            'display_order' => $this->faker->numberBetween(1, 15),
+            'sort' => $this->faker->numberBetween(1, 15),
         ];
     }
 
@@ -91,7 +91,7 @@ class RecipeIngredientFactory extends Factory
     public function withPreparation(string $preparation): static
     {
         return $this->state(fn (array $attributes) => [
-            'preparation_notes' => $preparation,
+            'notes' => $preparation,
         ]);
     }
 
@@ -101,17 +101,17 @@ class RecipeIngredientFactory extends Factory
     public function withoutPreparation(): static
     {
         return $this->state(fn (array $attributes) => [
-            'preparation_notes' => null,
+            'notes' => null,
         ]);
     }
 
     /**
-     * Create an ingredient with specific display order.
+     * Create an ingredient with specific sort order.
      */
     public function withOrder(int $order): static
     {
         return $this->state(fn (array $attributes) => [
-            'display_order' => $order,
+            'sort' => $order,
         ]);
     }
 
@@ -157,7 +157,7 @@ class RecipeIngredientFactory extends Factory
 
         return $this->state(fn (array $attributes) => [
             'quantity' => $this->faker->randomFloat(2, 0.5, 4),
-            'preparation_notes' => $this->faker->randomElement($bakingPreparations),
+            'notes' => $this->faker->randomElement($bakingPreparations),
             'is_optional' => false, // Baking ingredients are usually required
         ]);
     }
@@ -174,7 +174,7 @@ class RecipeIngredientFactory extends Factory
 
         return $this->state(fn (array $attributes) => [
             'quantity' => $this->faker->randomFloat(2, 1, 3),
-            'preparation_notes' => $this->faker->randomElement($proteinPreparations),
+            'notes' => $this->faker->randomElement($proteinPreparations),
             'is_optional' => false,
         ]);
     }
@@ -192,7 +192,7 @@ class RecipeIngredientFactory extends Factory
 
         return $this->state(fn (array $attributes) => [
             'quantity' => $this->faker->randomFloat(2, 0.5, 2),
-            'preparation_notes' => $this->faker->randomElement($vegetablePreparations),
+            'notes' => $this->faker->randomElement($vegetablePreparations),
         ]);
     }
 
@@ -203,7 +203,7 @@ class RecipeIngredientFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'quantity' => $this->faker->randomFloat(2, 0.25, 2),
-            'preparation_notes' => null,
+            'notes' => null,
             'is_optional' => $this->faker->boolean(30), // Seasonings more likely to be optional
         ]);
     }

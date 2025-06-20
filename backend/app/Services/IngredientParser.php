@@ -9,7 +9,7 @@ use App\Models\Unit;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Service for parsing recipe ingredients into structured grocery items.
+ * Service for parsing recipe ingredients into structured components.
  */
 final class IngredientParser
 {
@@ -86,27 +86,6 @@ final class IngredientParser
     public function parseIngredients(array $ingredients): array
     {
         return array_map($this->parseIngredient(...), $ingredients);
-    }
-
-    /**
-     * Convert parsed ingredient to grocery item data.
-     *
-     * @param  array<mixed>  $parsedIngredient
-     * @return array<mixed>
-     */
-    public function toGroceryItemData(array $parsedIngredient, int $groceryListId, ?int $recipeId = null): array
-    {
-        return [
-            'grocery_list_id' => $groceryListId,
-            'name' => $parsedIngredient['name'],
-            'quantity' => is_numeric($parsedIngredient['quantity']) ? $parsedIngredient['quantity'] : null,
-            'unit_id' => $parsedIngredient['unit_id'] ?? null,
-            'recipe_id' => $recipeId,
-            'is_checked' => false,
-            'metadata' => [
-                'parsed_from' => $parsedIngredient['original'],
-            ],
-        ];
     }
 
     /**

@@ -15,17 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', 255)->unique();
             $table->string('slug', 275)->unique();
-            $table->string('category', 100)->nullable();
-            $table->boolean('is_essential')->default(false);
-            $table->json('alternatives')->nullable();
-            $table->text('description')->nullable();
-            $table->decimal('average_price', 8, 2)->nullable();
             $table->timestamps();
-            $table->softDeletes();
 
             // Indexes for performance
-            $table->index(['category', 'is_essential']);
-            $table->index('is_essential');
             $table->index('name');
         });
     }

@@ -90,7 +90,7 @@ class RecipeNoteFactory extends Factory
             'recipe_id' => Recipe::factory(),
             'note_text' => $noteText,
             'note_type' => $noteType,
-            'display_order' => $this->faker->numberBetween(0, 10),
+            'sort' => $this->faker->numberBetween(0, 10),
             'is_public' => $this->faker->boolean(90), // 90% public
             'created_by_user_id' => $this->faker->boolean(30) ? User::factory() : null, // 30% have creator
         ];
@@ -147,12 +147,12 @@ class RecipeNoteFactory extends Factory
     }
 
     /**
-     * Create a note with specific display order.
+     * Create a note with specific sort order.
      */
     public function ordered(int $order): static
     {
         return $this->state(fn(array $attributes) => [
-            'display_order' => $order,
+            'sort' => $order,
         ]);
     }
 }

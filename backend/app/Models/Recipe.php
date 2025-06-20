@@ -88,7 +88,7 @@ final class Recipe extends Model
      */
     public function instructions(): HasMany
     {
-        return $this->hasMany(RecipeInstruction::class)->orderBy('step_number');
+        return $this->hasMany(RecipeInstruction::class)->orderBy('sort');
     }
 
     /**
@@ -98,7 +98,7 @@ final class Recipe extends Model
      */
     public function images(): HasMany
     {
-        return $this->hasMany(RecipeImage::class)->orderBy('sort_order');
+        return $this->hasMany(RecipeImage::class)->orderBy('sort');
     }
 
     /**
@@ -112,41 +112,6 @@ final class Recipe extends Model
     }
 
     /**
-     * Get the grocery lists that include this recipe.
-     *
-     * @return BelongsToMany<GroceryList, $this>
-     */
-    public function groceryLists(): BelongsToMany
-    {
-        return $this->belongsToMany(GroceryList::class, 'grocery_list_recipes')
-            ->withPivot(['servings', 'selected_item_ids', 'auto_generated'])
-            ->withTimestamps()
-            ->withCasts([
-                'selected_item_ids' => 'array',
-            ]);
-    }
-
-    /**
-     * Get grocery items generated from this recipe.
-     *
-     * @return HasMany<GroceryItem, $this>
-     */
-    public function groceryItems(): HasMany
-    {
-        return $this->hasMany(GroceryItem::class);
-    }
-
-    /**
-     * Get the ingredients for this recipe with quantities and preparation details.
-     *
-     * @return HasMany<RecipeIngredient, $this>
-     */
-    public function recipeIngredients(): HasMany
-    {
-        return $this->hasMany(RecipeIngredient::class)->orderBy('display_order');
-    }
-
-    /**
      * Get the ingredients for this recipe (many-to-many relationship).
      *
      * @return BelongsToMany<Ingredient, $this>
@@ -154,9 +119,8 @@ final class Recipe extends Model
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'recipe_ingredients')
-            ->withPivot(['quantity', 'unit_id', 'preparation_notes', 'is_optional', 'display_order'])
-            ->withTimestamps()
-            ->orderByPivot('display_order');
+            ->withPivot(['display_text', 'sort'])
+            ->orderByPivot('sort');
     }
 
     /**
@@ -166,8 +130,7 @@ final class Recipe extends Model
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'recipe_tags')
-            ->withTimestamps();
+        return $this->belongsToMany(Tag::class, 'recipe_tags');
     }
 
     /**
@@ -177,10 +140,7 @@ final class Recipe extends Model
      */
     public function equipments(): BelongsToMany
     {
-        return $this->belongsToMany(Equipment::class, 'recipe_equipments')
-            ->withPivot(['is_required', 'notes', 'display_order'])
-            ->withTimestamps()
-            ->orderByPivot('display_order');
+        return $this->belongsToMany(Equipment::class, 'recipe_equipments');
     }
 
     /**
@@ -196,17 +156,14 @@ final class Recipe extends Model
     /**
      * Get the nutrition information for this recipe (many-to-many with nutrients).
      * Access pivot data: $recipe->nutrients->first()->pivot->amount
-     * 
-     * TODO: Create Nutrient model and recipe_nutrient migration first
      *
      * @return BelongsToMany<Nutrient, $this>
      */
     public function nutrients(): BelongsToMany
     {
-        return $this->belongsToMany(Nutrient::class, 'recipe_nutrient')
-            ->withPivot(['amount', 'per_serving', 'source', 'confidence_level', 'sort_order', 'is_active', 'verified_at', 'notes'])
-            ->withTimestamps()
-            ->orderByPivot('sort_order');
+        return $this->belongsToMany(Nutrient::class, 'recipe_nutrients')
+            ->withPivot(['amount', 'percentage_dv'])
+            ->withTimestamps();
     }
 
     /**
@@ -216,7 +173,7 @@ final class Recipe extends Model
      */
     public function notes(): HasMany
     {
-        return $this->hasMany(RecipeNote::class)->orderBy('display_order');
+        return $this->hasMany(RecipeNote::class)->orderBy('sort');
     }
 
     /**
@@ -226,7 +183,7 @@ final class Recipe extends Model
      */
     public function tips(): HasMany
     {
-        return $this->hasMany(RecipeTip::class)->orderBy('display_order');
+        return $this->hasMany(RecipeTip::class)->orderBy('sort');
     }
 
     /**
@@ -236,6 +193,6 @@ final class Recipe extends Model
      */
     public function reactions(): HasMany
     {
-        return $this->hasMany(RecipeReaction::class)->orderBy('reacted_at', 'desc');
+        return $this->hasMany(RecipeReaction::class)->orderBy('created_at', 'desc');
     }
 }

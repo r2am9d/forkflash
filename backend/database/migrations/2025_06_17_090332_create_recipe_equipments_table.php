@@ -12,21 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recipe_equipments', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->foreignId('equipment_id')->constrained('equipments')->onDelete('cascade');
-            $table->boolean('is_required')->default(true); // Some equipment might be optional
-            $table->text('notes')->nullable(); // Usage notes or alternatives
-            $table->integer('display_order')->default(0); // Order to display equipment
-            $table->timestamps();
 
-            // Indexes for performance
-            $table->index(['recipe_id']);
-            $table->index(['equipment_id']);
-            $table->index(['recipe_id', 'display_order']);
+            // Composite primary key - no need for separate ID
+            $table->primary(['recipe_id', 'equipment_id']);
             
-            // Prevent duplicate equipment assignments per recipe
-            $table->unique(['recipe_id', 'equipment_id']);
+            // Optimized index for lookups
+            $table->index(['equipment_id', 'recipe_id']); // For finding recipes by equipment
         });
     }
 

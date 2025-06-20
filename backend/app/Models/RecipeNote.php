@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $recipe_id
  * @property string $note_text
  * @property string $note_type
- * @property int $display_order
+ * @property int $sort
  * @property bool $is_public
  * @property int|null $created_by_user_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -33,7 +33,7 @@ class RecipeNote extends Model
         'recipe_id',
         'note_text',
         'note_type',
-        'display_order',
+        'sort',
         'is_public',
         'created_by_user_id',
     ];
@@ -43,7 +43,7 @@ class RecipeNote extends Model
      */
     protected $casts = [
         'is_public' => 'boolean',
-        'display_order' => 'integer',
+        'sort' => 'integer',
     ];
 
     /**
@@ -89,11 +89,11 @@ class RecipeNote extends Model
     }
 
     /**
-     * Scope to order by display order.
+     * Scope to order by sort order.
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('display_order')->orderBy('created_at');
+        return $query->orderBy('sort')->orderBy('created_at');
     }
 
     /**

@@ -17,15 +17,15 @@ return new class extends Migration
             $table->id();
             $table->ulid('ulid')->unique(); // ULID for public identification
             $table->foreignId('recipe_id')->constrained('recipes', 'id')->onDelete('cascade');
-            $table->integer('step_number');
+            $table->integer('sort');
             $table->text('text');
-            $table->json('ingredients')->nullable(); // array of ingredients for this step
+            $table->json('ingredient_ids')->nullable(); // Array of ingredient IDs referenced in this step
             $table->timestamps();
             $table->softDeletes();
 
             // Indexes for performance
             $table->index('ulid'); // Primary index for public queries
-            $table->index(['recipe_id', 'step_number']);
+            $table->index(['recipe_id', 'sort']);
         });
     }
 

@@ -98,7 +98,7 @@ class RecipeTipFactory extends Factory
             'recipe_id' => Recipe::factory(),
             'tip_text' => $tipText,
             'tip_category' => $tipCategory,
-            'display_order' => $this->faker->numberBetween(0, 10),
+            'sort' => $this->faker->numberBetween(0, 10),
             'is_public' => $this->faker->boolean(95), // 95% public
             'created_by_user_id' => $this->faker->boolean(40) ? User::factory() : null, // 40% have creator
             'helpfulness_score' => $this->faker->numberBetween(0, 50),
@@ -184,7 +184,7 @@ class RecipeTipFactory extends Factory
     public function ordered(int $order): static
     {
         return $this->state(fn(array $attributes) => [
-            'display_order' => $order,
+            'sort' => $order,
         ]);
     }
 }

@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $recipe_id
  * @property string $tip_text
  * @property string $tip_category
- * @property int $display_order
+ * @property int $sort
  * @property bool $is_public
  * @property int|null $created_by_user_id
  * @property int $helpfulness_score
@@ -35,7 +35,7 @@ class RecipeTip extends Model
         'recipe_id',
         'tip_text',
         'tip_category',
-        'display_order',
+        'sort',
         'is_public',
         'created_by_user_id',
         'helpfulness_score',
@@ -47,7 +47,7 @@ class RecipeTip extends Model
      */
     protected $casts = [
         'is_public' => 'boolean',
-        'display_order' => 'integer',
+        'sort' => 'integer',
         'helpfulness_score' => 'integer',
         'times_used' => 'integer',
     ];
@@ -99,7 +99,7 @@ class RecipeTip extends Model
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('display_order')->orderBy('created_at');
+        return $query->orderBy('sort')->orderBy('created_at');
     }
 
     /**

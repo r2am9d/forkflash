@@ -51,7 +51,7 @@ class RecipeEquipmentFactory extends Factory
             'equipment_id' => Equipment::factory(),
             'is_required' => $this->faker->boolean(80), // 80% chance of being required
             'notes' => $this->faker->randomElement($usageNotes),
-            'display_order' => $this->faker->numberBetween(1, 10),
+            'sort' => $this->faker->numberBetween(1, 10),
         ];
     }
 
@@ -111,7 +111,7 @@ class RecipeEquipmentFactory extends Factory
     public function withOrder(int $order): static
     {
         return $this->state(fn (array $attributes) => [
-            'display_order' => $order,
+            'sort' => $order,
         ]);
     }
 

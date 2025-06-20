@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,22 +15,15 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $slug
  * @property int $category_id
- * @property array<mixed>|null $common_substitutes
- * @property array<mixed>|null $storage_info
- * @property array<mixed>|null $dietary_flags
- * @property float|null $average_price
- * @property string|null $price_unit
- * @property array<mixed>|null $seasonality
+ * @property array<mixed>|null $alternatives
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property Carbon|null $deleted_at
  * @property-read IngredientCategory $category
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Recipe> $recipes
  */
 final class Ingredient extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -42,12 +34,7 @@ final class Ingredient extends Model
         'name',
         'slug',
         'category_id',
-        'common_substitutes',
-        'storage_info',
-        'dietary_flags',
-        'average_price',
-        'price_unit',
-        'seasonality',
+        'alternatives',
     ];
 
     /**
@@ -56,11 +43,7 @@ final class Ingredient extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'common_substitutes' => 'array',
-        'storage_info' => 'array',
-        'dietary_flags' => 'array',
-        'average_price' => 'decimal:2',
-        'seasonality' => 'array',
+        'alternatives' => 'array',
     ];
 
     /**
@@ -81,81 +64,24 @@ final class Ingredient extends Model
     public function recipes(): BelongsToMany
     {
         return $this->belongsToMany(Recipe::class, 'recipe_ingredients')
-            ->withPivot(['quantity', 'unit_id', 'preparation_notes', 'is_optional', 'display_order'])
-            ->withTimestamps();
+            ->withPivot(['display_text', 'sort'])
+            ->orderByPivot('sort');
     }
 
     /**
-     * Scope to filter by dietary flags.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<Ingredient> $query
-     * @param string $flag
-     * @return \Illuminate\Database\Eloquent\Builder<Ingredient>
+     * Scope to search ingredients by name.
      */
-    public function scopeWithDietaryFlag($query, string $flag)
+    public function scopeSearch($query, $term)
     {
-        return $query->whereJsonContains('dietary_flags->' . $flag, true);
+        return $query->where('name', 'like', "%{$term}%");
     }
 
     /**
-     * Scope to filter vegetarian ingredients.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<Ingredient> $query
-     * @return \Illuminate\Database\Eloquent\Builder<Ingredient>
+     * Get the most commonly used ingredients (based on recipe count).
      */
-    public function scopeVegetarian($query)
+    public function scopePopular($query)
     {
-        return $query->withDietaryFlag('vegetarian');
-    }
-
-    /**
-     * Scope to filter vegan ingredients.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<Ingredient> $query
-     * @return \Illuminate\Database\Eloquent\Builder<Ingredient>
-     */
-    public function scopeVegan($query)
-    {
-        return $query->withDietaryFlag('vegan');
-    }
-
-    /**
-     * Scope to filter gluten-free ingredients.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<Ingredient> $query
-     * @return \Illuminate\Database\Eloquent\Builder<Ingredient>
-     */
-    public function scopeGlutenFree($query)
-    {
-        return $query->withDietaryFlag('gluten_free');
-    }
-
-    /**
-     * Check if ingredient has a specific dietary flag.
-     */
-    public function hasDietaryFlag(string $flag): bool
-    {
-        return $this->dietary_flags && ($this->dietary_flags[$flag] ?? false);
-    }
-
-    /**
-     * Get human-readable dietary flags.
-     *
-     * @return array<string>
-     */
-    public function getDietaryLabelsAttribute(): array
-    {
-        if (!$this->dietary_flags) {
-            return [];
-        }
-
-        $labels = [];
-        if ($this->dietary_flags['vegetarian'] ?? false) $labels[] = 'Vegetarian';
-        if ($this->dietary_flags['vegan'] ?? false) $labels[] = 'Vegan';
-        if ($this->dietary_flags['gluten_free'] ?? false) $labels[] = 'Gluten-Free';
-        if ($this->dietary_flags['dairy_free'] ?? false) $labels[] = 'Dairy-Free';
-        if ($this->dietary_flags['nut_free'] ?? false) $labels[] = 'Nut-Free';
-
-        return $labels;
+        return $query->withCount('recipes')
+            ->orderBy('recipes_count', 'desc');
     }
 }

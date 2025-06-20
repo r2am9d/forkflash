@@ -15,19 +15,17 @@ return new class extends Migration
     {
         Schema::create('units', function (Blueprint $table): void {
             $table->id();
-            $table->string('name')->unique(); // "cup", "pound", "medium"
-            $table->string('display_name'); // "Cup", "Pound", "Medium"
-            $table->string('unit_type'); // "volume", "weight", "count", "special"
-            $table->boolean('is_standardized')->default(true); // Whether it's a standard cooking unit
+            $table->string('name', 50)->unique(); // Shortened for mobile performance
+            $table->string('display_name', 100); // Reasonable limit
+            $table->enum('unit_type', ['volume', 'weight', 'count', 'size', 'special', 'nutrition']); // Explicit enum
+            $table->boolean('is_standardized')->default(true);
             $table->decimal('conversion_factor', 10, 6)->nullable(); // For future unit conversions
-            $table->string('abbreviation')->nullable(); // "c", "lb", "med"
-            $table->text('description')->nullable(); // "Standard US cooking cup"
+            $table->string('abbreviation', 10)->nullable(); // Shortened for mobile
             $table->timestamps();
 
-            // Indexes for performance
-            $table->index('unit_type');
-            $table->index('is_standardized');
+            // Optimized indexes for mobile queries
             $table->index(['unit_type', 'is_standardized']);
+            $table->index('name'); // Fast lookup by name (already unique, but explicit index)
         });
     }
 

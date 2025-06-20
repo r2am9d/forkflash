@@ -13,12 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $name
- * @property string|null $display_name
+ * @property string $display_name
  * @property string $unit_type
  * @property bool $is_standardized
  * @property float|null $conversion_factor
  * @property string|null $abbreviation
- * @property string|null $description
  *
  * @method static Builder|Unit groupedByType()
  * @method static Builder|Unit findByName(string $name)
@@ -38,7 +37,6 @@ final class Unit extends Model
         'is_standardized',
         'conversion_factor',
         'abbreviation',
-        'description',
     ];
 
     /**
@@ -61,16 +59,6 @@ final class Unit extends Model
     public static function findByName(string $name): ?self
     {
         return self::where('name', mb_strtolower(mb_trim($name)))->first();
-    }
-
-    /**
-     * Get the grocery items that use this unit.
-     *
-     * @return HasMany<GroceryItem, $this>
-     */
-    public function groceryItems(): HasMany
-    {
-        return $this->hasMany(GroceryItem::class);
     }
 
     /**

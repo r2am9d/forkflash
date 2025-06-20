@@ -71,9 +71,8 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // });
 
     // Future endpoints (placeholders)
-    Route::prefix('grocery-lists')->group(function (): void {
-        // Route::apiResource('/', GroceryListController::class);
-    });
+    // Recipe-related routes will be added here
+    // Route::apiResource('recipes', RecipeController::class);
 
     Route::prefix('meal-plans')->group(function (): void {
         // Route::apiResource('/', MealPlanController::class);

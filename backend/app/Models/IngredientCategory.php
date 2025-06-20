@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -14,14 +13,8 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property string|null $description
- * @property int|null $parent_id
- * @property int $sort_order
- * @property bool $is_active
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property-read IngredientCategory|null $parent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, IngredientCategory> $children
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Ingredient> $ingredients
  */
 final class IngredientCategory extends Model
@@ -36,10 +29,6 @@ final class IngredientCategory extends Model
     protected $fillable = [
         'name',
         'slug',
-        'description',
-        'parent_id',
-        'sort_order',
-        'is_active',
     ];
 
     /**
@@ -48,29 +37,8 @@ final class IngredientCategory extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'sort_order' => 'integer',
-        'is_active' => 'boolean',
+        // No custom casts needed
     ];
-
-    /**
-     * Get the parent category.
-     *
-     * @return BelongsTo<IngredientCategory, $this>
-     */
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(IngredientCategory::class, 'parent_id');
-    }
-
-    /**
-     * Get the child categories.
-     *
-     * @return HasMany<IngredientCategory, $this>
-     */
-    public function children(): HasMany
-    {
-        return $this->hasMany(IngredientCategory::class, 'parent_id')->orderBy('sort_order');
-    }
 
     /**
      * Get the ingredients in this category.
@@ -83,24 +51,27 @@ final class IngredientCategory extends Model
     }
 
     /**
-     * Scope to get only root categories (no parent).
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<IngredientCategory> $query
-     * @return \Illuminate\Database\Eloquent\Builder<IngredientCategory>
+     * Scope to search categories by name.
      */
-    public function scopeRoots($query)
+    public function scopeSearch($query, $term)
     {
-        return $query->whereNull('parent_id')->orderBy('sort_order');
+        return $query->where('name', 'like', "%{$term}%");
     }
 
     /**
-     * Scope to get only active categories.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<IngredientCategory> $query
-     * @return \Illuminate\Database\Eloquent\Builder<IngredientCategory>
+     * Scope to get categories ordered by ingredient count.
      */
-    public function scopeActive($query)
+    public function scopePopular($query)
     {
-        return $query->where('is_active', true);
+        return $query->withCount('ingredients')
+            ->orderBy('ingredients_count', 'desc');
+    }
+
+    /**
+     * Scope to get categories ordered by name.
+     */
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('name');
     }
 }

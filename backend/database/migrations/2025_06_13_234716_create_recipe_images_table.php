@@ -18,13 +18,13 @@ return new class extends Migration
             $table->foreignId('recipe_id')->constrained('recipes', 'id')->onDelete('cascade');
             $table->text('url');
             $table->boolean('is_primary')->default(false);
-            $table->integer('sort_order')->default(0);
+            $table->integer('sort')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
             // Indexes for performance
             $table->index(['recipe_id', 'is_primary']);
-            $table->index(['recipe_id', 'sort_order']);
+            $table->index(['recipe_id', 'sort']);
         });
     }
 

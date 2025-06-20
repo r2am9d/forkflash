@@ -14,23 +14,11 @@ class RecipeReaction extends Model
     protected $fillable = [
         'recipe_id',
         'user_id',
-        'reaction_type',
-        'comment',
-        'rating',
-        'metadata',
-        'is_public',
-        'reacted_at',
+        'type',
     ];
 
     protected $casts = [
-        'metadata' => 'array',
-        'is_public' => 'boolean',
-        'reacted_at' => 'datetime',
-        'rating' => 'integer',
-    ];
-
-    protected $dates = [
-        'reacted_at',
+        'type' => 'string',
     ];
 
     // Relationship: RecipeReaction belongs to Recipe
@@ -46,59 +34,35 @@ class RecipeReaction extends Model
     }
 
     // Scopes for filtering reactions
-    public function scopePublic($query)
-    {
-        return $query->where('is_public', true);
-    }
-
     public function scopeByType($query, string $type)
     {
-        return $query->where('reaction_type', $type);
-    }
-
-    public function scopeWithRating($query)
-    {
-        return $query->whereNotNull('rating');
+        return $query->where('type', $type);
     }
 
     public function scopeRecent($query, int $days = 30)
     {
-        return $query->where('reacted_at', '>=', Carbon::now()->subDays($days));
+        return $query->where('created_at', '>=', Carbon::now()->subDays($days));
     }
 
     // Helper methods
-    public function isPositiveReaction(): bool
-    {
-        return in_array($this->reaction_type, ['like', 'love', 'helpful', 'tried_it']);
-    }
-
     public function isEngagementReaction(): bool
     {
-        return in_array($this->reaction_type, ['want_to_try', 'bookmarked', 'shared']);
+        return in_array($this->type, ['bookmark', 'tried']);
     }
 
-    public function hasComment(): bool
+    public function isPositiveReaction(): bool
     {
-        return !empty($this->comment);
-    }
-
-    public function hasRating(): bool
-    {
-        return !is_null($this->rating);
+        return in_array($this->type, ['like', 'love', 'tried']);
     }
 
     // Get reaction emoji representation
     public function getEmojiAttribute(): string
     {
-        return match($this->reaction_type) {
+        return match($this->type) {
             'like' => '👍',
             'love' => '❤️',
-            'wow' => '😮',
-            'helpful' => '💡',
-            'tried_it' => '✅',
-            'want_to_try' => '🤔',
-            'bookmarked' => '🔖',
-            'shared' => '📤',
+            'bookmark' => '🔖',
+            'tried' => '✅',
             default => '👍',
         };
     }
@@ -106,15 +70,11 @@ class RecipeReaction extends Model
     // Get human-readable reaction label
     public function getLabelAttribute(): string
     {
-        return match($this->reaction_type) {
+        return match($this->type) {
             'like' => 'Liked',
             'love' => 'Loved',
-            'wow' => 'Amazing',
-            'helpful' => 'Helpful',
-            'tried_it' => 'Tried It',
-            'want_to_try' => 'Want to Try',
-            'bookmarked' => 'Bookmarked',
-            'shared' => 'Shared',
+            'bookmark' => 'Bookmarked',
+            'tried' => 'Tried It',
             default => 'Reacted',
         };
     }
@@ -125,12 +85,8 @@ class RecipeReaction extends Model
         return [
             'like' => ['emoji' => '👍', 'label' => 'Like'],
             'love' => ['emoji' => '❤️', 'label' => 'Love'],
-            'wow' => ['emoji' => '😮', 'label' => 'Wow'],
-            'helpful' => ['emoji' => '💡', 'label' => 'Helpful'],
-            'tried_it' => ['emoji' => '✅', 'label' => 'Tried It'],
-            'want_to_try' => ['emoji' => '🤔', 'label' => 'Want to Try'],
-            'bookmarked' => ['emoji' => '🔖', 'label' => 'Bookmark'],
-            'shared' => ['emoji' => '📤', 'label' => 'Share'],
+            'bookmark' => ['emoji' => '🔖', 'label' => 'Bookmark'],
+            'tried' => ['emoji' => '✅', 'label' => 'Tried It'],
         ];
     }
 }

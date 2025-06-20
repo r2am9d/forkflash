@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Recipe Equipment Pivot Model
  * 
- * Represents the relationship between recipes and equipment with usage notes,
- * requirements, and alternatives.
+ * Represents the relationship between recipes and equipment with sort order.
  * 
  * @property int $id
  * @property int $recipe_id
  * @property int $equipment_id
- * @property bool $is_required
- * @property string|null $notes
- * @property int $display_order
+ * @property int $sort
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * 
@@ -31,17 +28,14 @@ class RecipeEquipment extends Model
     protected $fillable = [
         'recipe_id',
         'equipment_id',
-        'is_required',
-        'notes',
-        'display_order',
+        'sort',
     ];
 
     /**
      * The attributes that should be cast.
      */
     protected $casts = [
-        'is_required' => 'boolean',
-        'display_order' => 'integer',
+        'sort' => 'integer',
     ];
 
     /**

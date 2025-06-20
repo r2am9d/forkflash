@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * Standard cooking units for ingredients and grocery items.
+ * Standard cooking units for recipe ingredients.
  * Provides consistency while allowing custom units.
  */
 final class CookingUnit

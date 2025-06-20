@@ -5,32 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
  * Tag Model
  * 
- * Generic tag system that can be used for recipes and potentially other entities.
+ * Simple tag system for recipes - optimized for mobile performance.
  * 
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property string $category
- * @property string|null $description
  * @property string $color
- * @property bool $is_dietary_restriction
- * @property bool $is_featured
  * @property int $usage_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * 
- * @property-read string $formatted_color
  */
 class Tag extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     /**
      * The table associated with the model.
@@ -43,11 +35,7 @@ class Tag extends Model
     protected $fillable = [
         'name',
         'slug',
-        'category',
-        'description',
         'color',
-        'is_dietary_restriction',
-        'is_featured',
         'usage_count',
     ];
 
@@ -55,8 +43,6 @@ class Tag extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'is_dietary_restriction' => 'boolean',
-        'is_featured' => 'boolean',
         'usage_count' => 'integer',
     ];
 
@@ -89,27 +75,11 @@ class Tag extends Model
     }
 
     /**
-     * Scope a query to only include tags of a given category.
+     * Scope a query to search tags by name.
      */
-    public function scopeCategory($query, $category)
+    public function scopeSearch($query, $term)
     {
-        return $query->where('category', $category);
-    }
-
-    /**
-     * Scope a query to only include dietary restriction tags.
-     */
-    public function scopeDietaryRestrictions($query)
-    {
-        return $query->where('is_dietary_restriction', true);
-    }
-
-    /**
-     * Scope a query to only include featured tags.
-     */
-    public function scopeFeatured($query)
-    {
-        return $query->where('is_featured', true);
+        return $query->where('name', 'like', "%{$term}%");
     }
 
     /**
@@ -121,42 +91,7 @@ class Tag extends Model
     }
 
     /**
-     * Scope a query to search tags by name or description.
-     */
-    public function scopeSearch($query, $term)
-    {
-        return $query->where(function ($query) use ($term) {
-            $query->where('name', 'like', "%{$term}%")
-                  ->orWhere('description', 'like', "%{$term}%");
-        });
-    }
-
-    /**
-     * Get the formatted color attribute.
-     */
-    public function getFormattedColorAttribute()
-    {
-        return $this->color ?: '#6B7280';
-    }
-
-    /**
-     * Check if this tag is a dietary restriction.
-     */
-    public function isDietaryRestriction()
-    {
-        return $this->is_dietary_restriction;
-    }
-
-    /**
-     * Check if this tag is featured.
-     */
-    public function isFeatured()
-    {
-        return $this->is_featured;
-    }
-
-    /**
-     * Increment the usage count.
+     * Increment the usage count when tag is used.
      */
     public function incrementUsage()
     {
@@ -164,29 +99,12 @@ class Tag extends Model
     }
 
     /**
-     * Decrement the usage count.
+     * Decrement the usage count when tag is removed.
      */
     public function decrementUsage()
     {
-        $this->decrement('usage_count');
-    }
-
-    /**
-     * Get common tag categories.
-     */
-    public static function getCategories()
-    {
-        return [
-            'dietary' => 'Dietary Restrictions',
-            'cooking-method' => 'Cooking Methods',
-            'flavor' => 'Flavor Profiles',
-            'occasion' => 'Occasions',
-            'course' => 'Course Types',
-            'difficulty' => 'Difficulty Levels',
-            'season' => 'Seasonal',
-            'health' => 'Health & Nutrition',
-            'style' => 'Cooking Styles',
-            'time' => 'Time-based',
-        ];
+        if ($this->usage_count > 0) {
+            $this->decrement('usage_count');
+        }
     }
 }

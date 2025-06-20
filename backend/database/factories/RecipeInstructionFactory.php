@@ -22,37 +22,65 @@ final class RecipeInstructionFactory extends Factory
     {
         return [
             'recipe_id' => Recipe::factory(),
-            'step_number' => 1,
+            'sort' => 1,
             'text' => $this->generateInstructionText(),
-            'ingredients' => fake()->optional(0.3)->randomElements([
-                'salt to taste',
-                'pepper to taste',
-                '1 tablespoon oil',
-                '1/4 cup water',
-                'fresh herbs for garnish',
-            ], fake()->numberBetween(1, 2)),
+            'ingredient_ids' => fake()->optional(0.4)->passthrough(
+                $this->generateIngredientIds()
+            ),
         ];
     }
 
     /**
-     * Create instruction for a specific step number.
+     * Create instruction for a specific sort order.
      */
     public function step(int $stepNumber): static
     {
         return $this->state(fn (array $attributes): array => [
-            'step_number' => $stepNumber,
+            'sort' => $stepNumber,
         ]);
     }
 
     /**
-     * Create instruction with specific ingredients.
+     * Create instruction with specific ingredient IDs.
      *
-     * @param  array<mixed>  $ingredients
+     * @param  array<int>  $ingredientIds
      */
-    public function withIngredients(array $ingredients): static
+    public function withIngredientIds(array $ingredientIds): static
+    {
+        return $this->state(function (array $attributes) use ($ingredientIds): array {
+            return [
+                'ingredient_ids' => $ingredientIds,
+            ];
+        });
+    }
+
+    /**
+     * Create instruction with no ingredient references.
+     */
+    public function withoutIngredients(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'ingredients' => $ingredients,
+            'ingredient_ids' => null,
+        ]);
+    }
+
+    /**
+     * Create instruction with sample ingredient IDs for testing.
+     */
+    public function withSampleIngredients(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'ingredient_ids' => [1, 2, 3], // Will reference actual ingredients when available
+        ]);
+    }
+
+    /**
+     * Create instruction with realistic cooking text that mentions ingredients.
+     */
+    public function withIngredientText(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'text' => 'Heat the olive oil in a large skillet, then add the diced onions and minced garlic. Season with salt and pepper to taste.',
         ]);
     }
 
@@ -62,23 +90,52 @@ final class RecipeInstructionFactory extends Factory
     private function generateInstructionText(): string
     {
         $actions = [
-            'Heat oil in a large skillet over medium-high heat',
-            'Add onions and cook until translucent, about 5 minutes',
+            'Heat olive oil in a large skillet over medium-high heat',
+            'Add diced onions and cook until translucent, about 5 minutes',
             'Season with salt and pepper to taste',
-            'Add garlic and cook for another minute until fragrant',
-            'Pour in the liquid and bring to a simmer',
+            'Add minced garlic and cook for another minute until fragrant',
+            'Pour in the chicken broth and bring to a simmer',
             'Cover and cook for {time} minutes, stirring occasionally',
             'Remove from heat and let stand for 2-3 minutes',
-            'Garnish with fresh herbs and serve immediately',
-            'Stir in the cream and cook until thickened',
+            'Garnish with fresh parsley and serve immediately',
+            'Stir in the heavy cream and cook until thickened',
             'Reduce heat to low and simmer gently',
+            'Add the flour and whisk until smooth',
+            'Season with paprika, thyme, and black pepper',
+            'Combine the ground beef with breadcrumbs and egg',
+            'Form the mixture into small meatballs using your hands',
+            'Brown the meatballs on all sides in the heated oil',
+            'Transfer to a serving platter and keep warm',
+            'Deglaze the pan with white wine or broth',
+            'Bring the mixture to a rolling boil',
+            'Taste and adjust seasoning as needed',
+            'Serve hot over rice or pasta',
         ];
 
-        $instruction = fake()->randomElement($actions);
+        $randomActions = fake()->randomElements($actions, fake()->numberBetween(1, 3));
+        $text = implode('. ', $randomActions);
 
-        // Replace placeholder with random cooking time
-        $instruction = str_replace('{time}', (string) fake()->numberBetween(10, 30), $instruction);
+        // Add timing variations
+        $text = str_replace('{time}', (string) fake()->numberBetween(5, 25), $text);
 
-        return $instruction;
+        return $text . '.';
+    }
+
+    /**
+     * Generate sample ingredient IDs for testing.
+     *
+     * @return array<int>
+     */
+    private function generateIngredientIds(): array
+    {
+        // Generate 1-3 random ingredient IDs
+        $count = fake()->numberBetween(1, 3);
+        $ingredientIds = [];
+        
+        for ($i = 0; $i < $count; $i++) {
+            $ingredientIds[] = fake()->numberBetween(1, 20); // Assume we have ingredients with IDs 1-20
+        }
+        
+        return array_unique($ingredientIds); // Remove duplicates
     }
 }

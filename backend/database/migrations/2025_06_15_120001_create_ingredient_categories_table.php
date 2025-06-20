@@ -17,17 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100)->unique();
             $table->string('slug', 120)->unique();
-            $table->text('description')->nullable();
-            $table->foreignId('parent_id')->nullable()->constrained('ingredient_categories', 'id')->onDelete('cascade');
-            $table->integer('sort_order')->default(0);
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            // Indexes for performance
+            // Simple indexes for mobile performance
             $table->index('name');
             $table->index('slug');
-            $table->index(['parent_id', 'sort_order']); // Hierarchical sorting
-            $table->index('is_active');
         });
     }
 

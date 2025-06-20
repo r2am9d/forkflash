@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * @property int $recipe_id
  * @property string $url
  * @property bool $is_primary
- * @property int $sort_order
+ * @property int $sort
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
@@ -38,7 +38,7 @@ final class RecipeImage extends Model
         'recipe_id',
         'url',
         'is_primary',
-        'sort_order',
+        'sort',
     ];
 
     /**
@@ -48,7 +48,7 @@ final class RecipeImage extends Model
      */
     protected $casts = [
         'is_primary' => 'boolean',
-        'sort_order' => 'integer',
+        'sort' => 'integer',
     ];
 
     /**

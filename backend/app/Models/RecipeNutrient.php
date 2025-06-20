@@ -14,13 +14,7 @@ use Illuminate\Support\Carbon;
  * @property int $recipe_id
  * @property int $nutrient_id
  * @property float $amount
- * @property bool $per_serving
- * @property string|null $source
- * @property string $confidence_level
- * @property int $sort_order
- * @property bool $is_active
- * @property Carbon|null $verified_at
- * @property string|null $notes
+ * @property float|null $percentage_dv
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Recipe $recipe
@@ -33,7 +27,7 @@ final class RecipeNutrient extends Model
     /**
      * The table associated with the model.
      */
-    protected $table = 'recipe_nutrient';
+    protected $table = 'recipe_nutrients';
 
     /**
      * The attributes that are mass assignable.
@@ -44,13 +38,7 @@ final class RecipeNutrient extends Model
         'recipe_id',
         'nutrient_id',
         'amount',
-        'per_serving',
-        'source',
-        'confidence_level',
-        'sort_order',
-        'is_active',
-        'verified_at',
-        'notes',
+        'percentage_dv',
     ];
 
     /**
@@ -60,10 +48,7 @@ final class RecipeNutrient extends Model
      */
     protected $casts = [
         'amount' => 'decimal:4',
-        'per_serving' => 'boolean',
-        'sort_order' => 'integer',
-        'is_active' => 'boolean',
-        'verified_at' => 'datetime',
+        'percentage_dv' => 'decimal:2',
     ];
 
     /**
@@ -87,60 +72,23 @@ final class RecipeNutrient extends Model
     }
 
     /**
-     * Scope to get only active nutrient data.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    /**
-     * Scope to get nutrients by confidence level.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @param string $level
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    public function scopeByConfidence($query, string $level)
-    {
-        return $query->where('confidence_level', $level);
-    }
-
-    /**
-     * Scope to order by display order.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order');
-    }
-
-    /**
-     * Get formatted amount with unit from nutrient.
+     * Get formatted amount with unit.
      */
     public function getFormattedAmountAttribute(): string
     {
-        return "{$this->amount}{$this->nutrient->unit}";
+        $unit = $this->nutrient?->unit?->name ?? '';
+        return "{$this->amount}{$unit}";
     }
 
     /**
-     * Check if this nutrient data is verified.
+     * Get formatted percentage daily value.
      */
-    public function isVerified(): bool
+    public function getFormattedPercentageDvAttribute(): ?string
     {
-        return $this->verified_at !== null;
-    }
+        if ($this->percentage_dv === null) {
+            return null;
+        }
 
-    /**
-     * Mark this nutrient data as verified.
-     */
-    public function markAsVerified(): void
-    {
-        $this->update(['verified_at' => now()]);
+        return "({$this->percentage_dv}%)";
     }
 }
