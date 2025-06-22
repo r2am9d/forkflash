@@ -28,6 +28,7 @@ final class DatabaseSeeder extends Seeder
 
         // Seed ingredient categories and ingredients (required for recipe ingredients)
         $this->call([
+            IngredientCategorySeeder::class,
             IngredientSeeder::class,
         ]);
 

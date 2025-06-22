@@ -25,11 +25,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $summary
  * @property int $servings
  * @property string|null $video
- * @property string|null $cuisine_type
- * @property string|null $meal_type
  * @property string|null $difficulty_level
- * @property float $average_rating
- * @property int $total_ratings
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
@@ -55,8 +51,6 @@ final class Recipe extends Model
         'summary',
         'servings',
         'video',
-        'cuisine_type',
-        'meal_type',
         'difficulty_level',
     ];
 
@@ -67,8 +61,6 @@ final class Recipe extends Model
      */
     protected $casts = [
         'servings' => 'integer',
-        'average_rating' => 'decimal:2',
-        'total_ratings' => 'integer',
     ];
 
     /**
@@ -121,16 +113,6 @@ final class Recipe extends Model
         return $this->belongsToMany(Ingredient::class, 'recipe_ingredients')
             ->withPivot(['display_text', 'sort'])
             ->orderByPivot('sort');
-    }
-
-    /**
-     * Get the tags for this recipe (many-to-many relationship).
-     *
-     * @return BelongsToMany<Tag, $this>
-     */
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class, 'recipe_tags');
     }
 
     /**

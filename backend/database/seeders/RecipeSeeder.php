@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Image;
 use App\Models\Ingredient;
+use App\Models\Instruction;
 use App\Models\Nutrient;
 use App\Models\Recipe;
-use App\Models\Image;
-use App\Models\Instruction;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Factories\ImageFactory;
@@ -39,15 +39,17 @@ final class RecipeSeeder extends Seeder
 
         if ($ingredients->isEmpty()) {
             $this->command->error('No ingredients found! Please run IngredientSeeder first.');
+
             return;
         }
 
         if ($nutrients->isEmpty()) {
             $this->command->error('No nutrients found! Please run NutrientSeeder first.');
+
             return;
         }
 
-        $this->command->info(sprintf('Found %d users, %d ingredients, %d nutrients. Creating recipes...', 
+        $this->command->info(sprintf('Found %d users, %d ingredients, %d nutrients. Creating recipes...',
             $users->count(), $ingredients->count(), $nutrients->count()));
 
         // Create 20 recipes with complete data
@@ -58,26 +60,13 @@ final class RecipeSeeder extends Seeder
                 $this->createRecipeRelationships($recipe, $ingredients, $nutrients, $units);
             });
 
-        // Create some specific cuisine types for variety
-        $cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian'];
-
-        foreach ($cuisines as $cuisine) {
-            Recipe::factory(3)
-                ->cuisine($cuisine)
-                ->recycle($users) // Use existing users
-                ->create()
-                ->each(function (Recipe $recipe) use ($ingredients, $nutrients, $units): void {
-                    $this->createRecipeRelationships($recipe, $ingredients, $nutrients, $units, true);
-                });
-        }
-
         // Create some quick recipes
-        Recipe::factory(10)
+        Recipe::factory(15)
             ->quick()
             ->recycle($users) // Use existing users
             ->create()
             ->each(function (Recipe $recipe) use ($ingredients, $nutrients, $units): void {
-                $this->createRecipeRelationships($recipe, $ingredients, $nutrients, $units, false, true);
+                $this->createRecipeRelationships($recipe, $ingredients, $nutrients, $units, true);
             });
 
         $this->command->info('Recipe seeding completed!');
@@ -91,13 +80,16 @@ final class RecipeSeeder extends Seeder
 
     /**
      * Create relationships for a recipe (instructions, images, ingredients, nutrients).
+     *
+     * @param  mixed  $ingredients
+     * @param  mixed  $nutrients
+     * @param  mixed  $units
      */
     private function createRecipeRelationships(
-        Recipe $recipe, 
-        $ingredients, 
-        $nutrients, 
-        $units, 
-        bool $isCuisine = false, 
+        Recipe $recipe,
+        $ingredients,
+        $nutrients,
+        $units,
         bool $isQuick = false
     ): void {
         // Create instructions
@@ -114,17 +106,17 @@ final class RecipeSeeder extends Seeder
             $quantity = fake()->randomFloat(1, 0.5, 5.0);
             $unit = $units->random()->name ?? fake()->randomElement(['cups', 'tablespoons', 'ounces', 'pieces']);
             $notes = fake()->optional(0.3)->randomElement(['diced', 'chopped', 'minced', 'sliced']);
-            
-            $displayText = $quantity . ' ' . $unit . ' ' . $ingredient->name;
+
+            $displayText = $quantity.' '.$unit.' '.$ingredient->name;
             if ($notes) {
-                $displayText .= ', ' . $notes;
+                $displayText .= ', '.$notes;
             }
 
             $attachData[$ingredient->id] = [
                 'display_text' => $displayText,
                 'sort' => $index + 1,
             ];
-            
+
             $createdIngredients[] = $ingredient;
         }
 
@@ -135,10 +127,10 @@ final class RecipeSeeder extends Seeder
         for ($i = 1; $i <= $instructionCount; ++$i) {
             // For some steps, reference ingredients from the recipe
             $ingredientIds = null;
-            if (fake()->boolean(60) && !empty($createdIngredients)) { // 60% chance of having references
+            if (fake()->boolean(60) && $createdIngredients !== []) { // 60% chance of having references
                 $numReferences = fake()->numberBetween(1, min(3, count($createdIngredients)));
                 $selectedForReference = fake()->randomElements($createdIngredients, $numReferences);
-                
+
                 $ingredientIds = [];
                 foreach ($selectedForReference as $ingredient) {
                     $ingredientIds[] = $ingredient->id;
@@ -174,7 +166,7 @@ final class RecipeSeeder extends Seeder
             // Generate realistic nutrition values based on nutrient type
             $amount = $this->generateNutrientAmount($nutrient);
             $percentageDv = fake()->optional(0.7)->randomFloat(0, 1, 200); // 70% chance of having % DV
-            
+
             $nutritionData[$nutrient->id] = [
                 'amount' => $amount,
                 'percentage_dv' => $percentageDv,
@@ -190,7 +182,7 @@ final class RecipeSeeder extends Seeder
      */
     private function generateNutrientAmount(Nutrient $nutrient): float
     {
-        return match (strtolower($nutrient->name)) {
+        return match (mb_strtolower($nutrient->name)) {
             'calories' => fake()->randomFloat(1, 150, 800),
             'protein' => fake()->randomFloat(1, 5, 45),
             'total carbohydrates' => fake()->randomFloat(1, 10, 80),

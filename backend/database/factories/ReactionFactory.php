@@ -22,7 +22,7 @@ final class ReactionFactory extends Factory
     public function definition(): array
     {
         $reactionTypes = ['like', 'love', 'bookmark', 'tried'];
-        
+
         return [
             'recipe_id' => Recipe::factory(),
             'user_id' => User::factory(),

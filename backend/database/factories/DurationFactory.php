@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Recipe;
 use App\Models\Duration;
+use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -42,7 +42,7 @@ final class DurationFactory extends Factory
      */
     public function quick(): static
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes): array {
             $prepMinutes = $this->faker->numberBetween(5, 15);
             $cookMinutes = $this->faker->numberBetween(5, 15);
             $totalMinutes = $prepMinutes + $cookMinutes;
@@ -60,7 +60,7 @@ final class DurationFactory extends Factory
      */
     public function slowCook(): static
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes): array {
             $prepMinutes = $this->faker->numberBetween(15, 30);
             $cookMinutes = $this->faker->numberBetween(120, 480); // 2-8 hours
             $totalMinutes = $prepMinutes + $cookMinutes;

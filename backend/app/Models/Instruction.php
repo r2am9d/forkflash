@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\HasUlids;
 use Database\Factories\InstructionFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,7 +29,6 @@ final class Instruction extends Model
     /** @use HasFactory<InstructionFactory> */
     use HasFactory;
 
-    use HasUlids;
     use SoftDeletes;
 
     /**
@@ -73,7 +72,7 @@ final class Instruction extends Model
     /**
      * Get the ingredients referenced in this instruction.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ingredient>
+     * @return Collection<int, Ingredient>
      */
     public function getReferencedIngredients()
     {
@@ -99,7 +98,7 @@ final class Instruction extends Model
      */
     public function hasIngredientReferences(): bool
     {
-        return !empty($this->ingredient_ids);
+        return ! empty($this->ingredient_ids);
     }
 
     /**

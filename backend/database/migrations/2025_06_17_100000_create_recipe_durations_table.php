@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipe_durations', function (Blueprint $table) {
+        Schema::create('recipe_durations', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('recipe_id')->unique()->constrained('recipes')->onDelete('cascade');
             $table->integer('prep_minutes')->nullable(); // Preparation time in minutes (from JSON "Prep: X minutes")

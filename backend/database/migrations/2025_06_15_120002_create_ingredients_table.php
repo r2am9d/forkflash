@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Indexes for performance
             $table->index('name');
-            $table->index('slug'); 
+            $table->index('slug');
             $table->index('category_id');
             $table->index(['category_id', 'name']); // Category filtering with name search
         });

@@ -90,7 +90,7 @@ final class TrickFactory extends Factory
         return $this->state([
             'type' => 'note',
             'content' => $this->faker->randomElement([
-                'Recipe serves 4-6 people generously', 
+                'Recipe serves 4-6 people generously',
                 'Cooking time may vary based on your equipment',
                 'Adjust spice levels to your preference',
                 'Best served immediately while hot',

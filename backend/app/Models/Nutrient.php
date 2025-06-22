@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\NutrientFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
  */
 final class Nutrient extends Model
 {
+    /** @use HasFactory<NutrientFactory> */
     use HasFactory;
 
     /**
@@ -45,20 +47,6 @@ final class Nutrient extends Model
     ];
 
     /**
-     * Boot the model.
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function (Nutrient $nutrient) {
-            if (empty($nutrient->slug)) {
-                $nutrient->slug = Str::slug($nutrient->name);
-            }
-        });
-    }
-
-    /**
      * Get the unit for this nutrient.
      *
      * @return BelongsTo<Unit, $this>
@@ -78,5 +66,19 @@ final class Nutrient extends Model
         return $this->belongsToMany(Recipe::class, 'recipe_nutrients')
             ->withPivot(['amount', 'percentage_dv'])
             ->withTimestamps();
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        self::creating(function (Nutrient $nutrient): void {
+            if (empty($nutrient->slug)) {
+                $nutrient->slug = Str::slug($nutrient->name);
+            }
+        });
     }
 }

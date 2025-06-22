@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('recipe_instructions', function (Blueprint $table): void {
             $table->id();
-            $table->ulid('ulid')->unique(); // ULID for public identification
             $table->foreignId('recipe_id')->constrained('recipes', 'id')->onDelete('cascade');
             $table->integer('sort');
             $table->text('text');
@@ -24,7 +23,6 @@ return new class extends Migration
             $table->softDeletes();
 
             // Indexes for performance
-            $table->index('ulid'); // Primary index for public queries
             $table->index(['recipe_id', 'sort']);
         });
     }

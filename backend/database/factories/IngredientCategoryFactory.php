@@ -22,7 +22,7 @@ final class IngredientCategoryFactory extends Factory
         $name = fake()->unique()->randomElement([
             // Simple flat categories for mobile navigation
             'Proteins',
-            'Vegetables', 
+            'Vegetables',
             'Fruits',
             'Grains & Starches',
             'Dairy & Eggs',

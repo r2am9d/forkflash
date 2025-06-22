@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Recipe;
 use App\Models\Image;
+use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

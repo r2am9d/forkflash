@@ -87,7 +87,7 @@ final class UnitSeeder extends Seeder
             ['name' => 'bags', 'display_name' => 'Bags', 'unit_type' => 'count'],
             ['name' => 'box', 'display_name' => 'Box', 'unit_type' => 'count'],
             ['name' => 'boxes', 'display_name' => 'Boxes', 'unit_type' => 'count'],
-            
+
             // Additional units from recipe data analysis
             ['name' => 'stick', 'display_name' => 'Stick', 'unit_type' => 'count'],
             ['name' => 'sticks', 'display_name' => 'Sticks', 'unit_type' => 'count'],

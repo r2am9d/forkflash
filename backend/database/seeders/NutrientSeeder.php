@@ -19,6 +19,7 @@ final class NutrientSeeder extends Seeder
         $units = Unit::all()->keyBy('name');
         if ($units->isEmpty()) {
             $this->command->error('No units found! Please run UnitSeeder first.');
+
             return;
         }
 
@@ -47,9 +48,10 @@ final class NutrientSeeder extends Seeder
             // Find the unit by name
             $unitName = $nutrientData['unit'];
             $unit = $units->get($unitName);
-            
-            if (!$unit) {
-                $this->command->warn("Unit '{$unitName}' not found for nutrient '{$nutrientData['name']}'. Skipping...");
+
+            if (! $unit) {
+                $this->command->warn(sprintf("Unit '%s' not found for nutrient '%s'. Skipping...", $unitName, $nutrientData['name']));
+
                 continue;
             }
 
@@ -60,6 +62,6 @@ final class NutrientSeeder extends Seeder
             Nutrient::create($nutrientData);
         }
 
-        $this->command->info('Created ' . count($nutrients) . ' nutrients');
+        $this->command->info('Created '.count($nutrients).' nutrients');
     }
 }

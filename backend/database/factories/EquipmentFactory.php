@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Equipment;
@@ -7,9 +9,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Equipment>
+ * @extends Factory<Equipment>
  */
-class EquipmentFactory extends Factory
+final class EquipmentFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
@@ -24,7 +26,7 @@ class EquipmentFactory extends Factory
     public function definition(): array
     {
         $equipmentData = $this->getRandomEquipment();
-        
+
         return [
             'name' => $equipmentData['name'],
             'slug' => Str::slug($equipmentData['name']),
@@ -33,6 +35,8 @@ class EquipmentFactory extends Factory
 
     /**
      * Get random equipment data from predefined list.
+     *
+     * @return array<mixed>
      */
     private function getRandomEquipment(): array
     {

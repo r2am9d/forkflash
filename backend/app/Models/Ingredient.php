@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\IngredientFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,10 +21,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read IngredientCategory $category
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Recipe> $recipes
+ * @property-read Collection<int, Recipe> $recipes
  */
 final class Ingredient extends Model
 {
+    /** @use HasFactory<IngredientFactory> */
     use HasFactory;
 
     /**
@@ -70,16 +73,21 @@ final class Ingredient extends Model
 
     /**
      * Scope to search ingredients by name.
+     *
+     * @param  mixed  $query
+     * @param  string  $term
      */
-    public function scopeSearch($query, $term)
+    public function scopeSearch($query, $term): mixed
     {
-        return $query->where('name', 'like', "%{$term}%");
+        return $query->where('name', 'like', sprintf('%%%s%%', $term));
     }
 
     /**
      * Get the most commonly used ingredients (based on recipe count).
+     *
+     * @param  mixed  $query
      */
-    public function scopePopular($query)
+    public function scopePopular($query): mixed
     {
         return $query->withCount('recipes')
             ->orderBy('recipes_count', 'desc');

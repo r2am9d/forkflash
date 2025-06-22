@@ -17,11 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100)->unique();
             $table->string('slug', 120)->unique();
+            $table->foreignId('parent_id')->nullable()->constrained('ingredient_categories')->onDelete('cascade');
             $table->timestamps();
 
             // Simple indexes for mobile performance
             $table->index('name');
             $table->index('slug');
+            $table->index('parent_id'); // Index for hierarchy queries
         });
     }
 

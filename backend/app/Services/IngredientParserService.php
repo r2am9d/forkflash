@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Service for parsing recipe ingredients into structured components.
  */
-final class IngredientParser
+final class IngredientParserService
 {
     /**
      * Parse an ingredient string into structured components.
@@ -109,10 +109,9 @@ final class IngredientParser
             return Unit::create([
                 'name' => mb_strtolower($standardized),
                 'display_name' => ucfirst($standardized),
-                'unit_type' => CookingUnit::getCategory($standardized) ?? 'other',
+                'unit_type' => CookingUnit::getCategory($standardized) ?? 'special',
                 'is_standardized' => CookingUnit::isStandard($unitText),
                 'abbreviation' => $this->getUnitAbbreviation($standardized),
-                'description' => sprintf('Standard %s unit', $standardized),
             ]);
         }
 

@@ -16,122 +16,155 @@ final class IngredientSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Creating ingredient categories...');
+        $this->command->info('Creating ingredients using hierarchical categories...');
 
-        // Create ingredient categories first
-        $categories = [
-            [
-                'name' => 'Vegetables',
-                'slug' => 'vegetables',
-            ],
-            [
-                'name' => 'Fruits',
-                'slug' => 'fruits', 
-            ],
-            [
-                'name' => 'Proteins',
-                'slug' => 'proteins',
-            ],
-            [
-                'name' => 'Dairy',
-                'slug' => 'dairy',
-            ],
-            [
-                'name' => 'Grains & Starches',
-                'slug' => 'grains-starches',
-            ],
-            [
-                'name' => 'Spices & Herbs',
-                'slug' => 'spices-herbs',
-            ],
-            [
-                'name' => 'Oils & Fats',
-                'slug' => 'oils-fats',
-            ],
-            [
-                'name' => 'Pantry Items',
-                'slug' => 'pantry-items',
-            ],
-        ];
+        // Get all leaf categories (categories with no children)
+        $leafCategories = IngredientCategory::leaves()->get()->keyBy('slug');
 
-        $createdCategories = [];
-        foreach ($categories as $categoryData) {
-            $category = IngredientCategory::create($categoryData);
-            $createdCategories[$category->slug] = $category;
+        if ($leafCategories->isEmpty()) {
+            $this->command->error('No leaf categories found! Please run IngredientCategorySeeder first.');
+
+            return;
         }
 
-        $this->command->info('Creating ingredients...');
-
-        // Create common ingredients
+        // Ingredients organized by leaf category slug
         $ingredients = [
-            // Vegetables
-            ['name' => 'Onion', 'category' => 'vegetables', 'alternatives' => ['shallots', 'leeks']],
-            ['name' => 'Garlic', 'category' => 'vegetables', 'alternatives' => ['garlic powder', 'shallots']],
-            ['name' => 'Tomato', 'category' => 'vegetables', 'alternatives' => ['canned tomatoes', 'tomato paste']],
-            ['name' => 'Bell Pepper', 'category' => 'vegetables', 'alternatives' => ['poblano pepper', 'anaheim pepper']],
-            ['name' => 'Carrot', 'category' => 'vegetables', 'alternatives' => ['parsnips', 'sweet potato']],
-            ['name' => 'Celery', 'category' => 'vegetables', 'alternatives' => ['fennel', 'bok choy']],
-            ['name' => 'Mushroom', 'category' => 'vegetables', 'alternatives' => ['portobello', 'shiitake']],
-            ['name' => 'Spinach', 'category' => 'vegetables', 'alternatives' => ['kale', 'arugula']],
-            ['name' => 'Broccoli', 'category' => 'vegetables', 'alternatives' => ['cauliflower', 'brussels sprouts']],
-            ['name' => 'Potato', 'category' => 'vegetables', 'alternatives' => ['sweet potato', 'turnips']],
+            // Beef (under Protein > Beef)
+            'beef' => [
+                ['name' => 'Ground Beef', 'alternatives' => ['ground turkey', 'ground pork', 'ground chicken']],
+                ['name' => 'Corned Beef', 'alternatives' => ['pastrami', 'beef brisket']],
+                ['name' => 'Ribeye Steak', 'alternatives' => ['sirloin steak', 'filet mignon']],
+                ['name' => 'Beef Chuck', 'alternatives' => ['beef shoulder', 'beef round']],
+                ['name' => 'Beef Brisket', 'alternatives' => ['chuck roast', 'short ribs']],
+            ],
 
-            // Proteins
-            ['name' => 'Chicken Breast', 'category' => 'proteins', 'alternatives' => ['chicken thighs', 'turkey breast']],
-            ['name' => 'Ground Beef', 'category' => 'proteins', 'alternatives' => ['ground turkey', 'ground pork']],
-            ['name' => 'Salmon', 'category' => 'proteins', 'alternatives' => ['trout', 'cod']],
-            ['name' => 'Eggs', 'category' => 'proteins', 'alternatives' => ['egg substitute', 'flax eggs']],
-            ['name' => 'Tofu', 'category' => 'proteins', 'alternatives' => ['tempeh', 'seitan']],
+            // Chicken (under Protein > Chicken)
+            'chicken' => [
+                ['name' => 'Chicken Breast', 'alternatives' => ['chicken thighs', 'turkey breast']],
+                ['name' => 'Chicken Thigh', 'alternatives' => ['chicken drumsticks', 'chicken leg quarters']],
+                ['name' => 'Whole Chicken', 'alternatives' => ['chicken parts', 'cornish hen']],
+                ['name' => 'Chicken Wings', 'alternatives' => ['chicken drumettes', 'chicken flats']],
+                ['name' => 'Ground Chicken', 'alternatives' => ['ground turkey', 'ground pork']],
+            ],
 
-            // Dairy
-            ['name' => 'Butter', 'category' => 'dairy', 'alternatives' => ['margarine', 'coconut oil']],
-            ['name' => 'Milk', 'category' => 'dairy', 'alternatives' => ['almond milk', 'oat milk']],
-            ['name' => 'Cheddar Cheese', 'category' => 'dairy', 'alternatives' => ['colby cheese', 'monterey jack']],
-            ['name' => 'Mozzarella', 'category' => 'dairy', 'alternatives' => ['provolone', 'fontina']],
-            ['name' => 'Greek Yogurt', 'category' => 'dairy', 'alternatives' => ['sour cream', 'buttermilk']],
+            // Pork (under Protein > Pork)
+            'pork' => [
+                ['name' => 'Pork Belly', 'alternatives' => ['bacon', 'pancetta']],
+                ['name' => 'Ground Pork', 'alternatives' => ['ground beef', 'ground turkey']],
+                ['name' => 'Pork Chops', 'alternatives' => ['pork tenderloin', 'pork shoulder']],
+                ['name' => 'Pork Shoulder', 'alternatives' => ['pork butt', 'pork leg']],
+                ['name' => 'Bacon', 'alternatives' => ['pancetta', 'ham']],
+            ],
 
-            // Grains & Starches
-            ['name' => 'Rice', 'category' => 'grains-starches', 'alternatives' => ['quinoa', 'barley']],
-            ['name' => 'Pasta', 'category' => 'grains-starches', 'alternatives' => ['zucchini noodles', 'rice noodles']],
-            ['name' => 'Bread', 'category' => 'grains-starches', 'alternatives' => ['tortillas', 'pita bread']],
-            ['name' => 'Flour', 'category' => 'grains-starches', 'alternatives' => ['almond flour', 'coconut flour']],
-            ['name' => 'Quinoa', 'category' => 'grains-starches', 'alternatives' => ['bulgur', 'couscous']],
+            // Seafood (under Protein > Seafood)
+            'seafood' => [
+                ['name' => 'Salmon', 'alternatives' => ['trout', 'cod', 'halibut']],
+                ['name' => 'Shrimp', 'alternatives' => ['prawns', 'lobster', 'crab']],
+                ['name' => 'Tilapia', 'alternatives' => ['cod', 'haddock', 'flounder']],
+                ['name' => 'Bangus (Milkfish)', 'alternatives' => ['salmon', 'trout']],
+                ['name' => 'Tuna', 'alternatives' => ['salmon', 'mackerel']],
+            ],
 
-            // Spices & Herbs
-            ['name' => 'Salt', 'category' => 'spices-herbs', 'alternatives' => ['sea salt', 'kosher salt']],
-            ['name' => 'Black Pepper', 'category' => 'spices-herbs', 'alternatives' => ['white pepper', 'cayenne pepper']],
-            ['name' => 'Basil', 'category' => 'spices-herbs', 'alternatives' => ['oregano', 'thyme']],
-            ['name' => 'Oregano', 'category' => 'spices-herbs', 'alternatives' => ['marjoram', 'basil']],
-            ['name' => 'Thyme', 'category' => 'spices-herbs', 'alternatives' => ['sage', 'rosemary']],
-            ['name' => 'Paprika', 'category' => 'spices-herbs', 'alternatives' => ['chili powder', 'cayenne pepper']],
+            // Leafy Greens (under Vegetables > Leafy Greens)
+            'leafy-greens' => [
+                ['name' => 'Spinach', 'alternatives' => ['kale', 'arugula', 'swiss chard']],
+                ['name' => 'Lettuce', 'alternatives' => ['cabbage', 'spinach']],
+                ['name' => 'Kale', 'alternatives' => ['spinach', 'collard greens']],
+                ['name' => 'Bok Choy', 'alternatives' => ['napa cabbage', 'spinach']],
+                ['name' => 'Arugula', 'alternatives' => ['spinach', 'watercress']],
+            ],
 
-            // Oils & Fats
-            ['name' => 'Olive Oil', 'category' => 'oils-fats', 'alternatives' => ['avocado oil', 'canola oil']],
-            ['name' => 'Vegetable Oil', 'category' => 'oils-fats', 'alternatives' => ['canola oil', 'sunflower oil']],
-            ['name' => 'Coconut Oil', 'category' => 'oils-fats', 'alternatives' => ['butter', 'ghee']],
+            // Root Vegetables (under Vegetables > Root Vegetables)
+            'root-vegetables' => [
+                ['name' => 'Potato', 'alternatives' => ['sweet potato', 'turnips', 'parsnips']],
+                ['name' => 'Sweet Potato', 'alternatives' => ['potato', 'yam', 'butternut squash']],
+                ['name' => 'Carrot', 'alternatives' => ['parsnips', 'sweet potato']],
+                ['name' => 'Radish', 'alternatives' => ['turnips', 'daikon']],
+                ['name' => 'Turnips', 'alternatives' => ['rutabaga', 'parsnips']],
+            ],
 
-            // Pantry Items
-            ['name' => 'Soy Sauce', 'category' => 'pantry-items', 'alternatives' => ['tamari', 'coconut aminos']],
-            ['name' => 'Balsamic Vinegar', 'category' => 'pantry-items', 'alternatives' => ['red wine vinegar', 'apple cider vinegar']],
-            ['name' => 'Honey', 'category' => 'pantry-items', 'alternatives' => ['maple syrup', 'agave nectar']],
-            ['name' => 'Lemon Juice', 'category' => 'pantry-items', 'alternatives' => ['lime juice', 'white wine vinegar']],
-            ['name' => 'Canned Tomatoes', 'category' => 'pantry-items', 'alternatives' => ['fresh tomatoes', 'tomato sauce']],
+            // Onions & Garlic (under Vegetables > Onions & Garlic)
+            'onions-garlic' => [
+                ['name' => 'Yellow Onion', 'alternatives' => ['white onion', 'red onion']],
+                ['name' => 'Red Onion', 'alternatives' => ['yellow onion', 'shallots']],
+                ['name' => 'Garlic', 'alternatives' => ['garlic powder', 'shallots']],
+                ['name' => 'Shallots', 'alternatives' => ['green onions', 'red onion']],
+                ['name' => 'Green Onions', 'alternatives' => ['chives', 'leeks']],
+            ],
+
+            // Rice (under Carbohydrates > Rice)
+            'rice' => [
+                ['name' => 'Jasmine Rice', 'alternatives' => ['basmati rice', 'white rice']],
+                ['name' => 'Brown Rice', 'alternatives' => ['quinoa', 'wild rice']],
+                ['name' => 'Basmati Rice', 'alternatives' => ['jasmine rice', 'long grain rice']],
+                ['name' => 'Glutinous Rice', 'alternatives' => ['short grain rice', 'arborio rice']],
+                ['name' => 'Rice Noodles', 'alternatives' => ['pasta', 'shirataki noodles']],
+            ],
+
+            // Pasta & Noodles (under Carbohydrates > Pasta & Noodles)
+            'pasta-noodles' => [
+                ['name' => 'Spaghetti', 'alternatives' => ['linguine', 'angel hair pasta']],
+                ['name' => 'Penne', 'alternatives' => ['rigatoni', 'fusilli']],
+                ['name' => 'Fettuccine', 'alternatives' => ['tagliatelle', 'pappardelle']],
+                ['name' => 'Pancit Canton', 'alternatives' => ['lo mein noodles', 'chow mein noodles']],
+                ['name' => 'Rice Vermicelli', 'alternatives' => ['thin rice noodles', 'angel hair pasta']],
+            ],
+
+            // Bread & Flour (under Carbohydrates > Bread & Flour)
+            'bread-flour' => [
+                ['name' => 'All-Purpose Flour', 'alternatives' => ['bread flour', 'cake flour']],
+                ['name' => 'Bread', 'alternatives' => ['tortillas', 'pita bread']],
+                ['name' => 'Panko Breadcrumbs', 'alternatives' => ['regular breadcrumbs', 'crushed crackers']],
+                ['name' => 'Rice Flour', 'alternatives' => ['cornstarch', 'tapioca flour']],
+                ['name' => 'Cornstarch', 'alternatives' => ['arrowroot powder', 'tapioca starch']],
+            ],
+
+            // Filipino Spices (under Spices & Seasonings > Filipino Spices)
+            'filipino-spices' => [
+                ['name' => 'Bagoong', 'alternatives' => ['fish sauce', 'anchovy paste']],
+                ['name' => 'Patis (Fish Sauce)', 'alternatives' => ['soy sauce', 'salt']],
+                ['name' => 'Soy Sauce', 'alternatives' => ['tamari', 'coconut aminos']],
+                ['name' => 'Vinegar', 'alternatives' => ['white vinegar', 'apple cider vinegar']],
+                ['name' => 'Bay Leaves', 'alternatives' => ['dried herbs', 'thyme']],
+            ],
         ];
 
-        foreach ($ingredients as $ingredientData) {
-            $category = $createdCategories[$ingredientData['category']];
-            
-            Ingredient::create([
-                'name' => $ingredientData['name'],
-                'category_id' => $category->id,
-                'slug' => Str::slug($ingredientData['name']),
-                'alternatives' => $ingredientData['alternatives'],
-            ]);
+        $createdCount = 0;
+
+        foreach ($ingredients as $categorySlug => $categoryIngredients) {
+            $category = $leafCategories->get($categorySlug);
+
+            if (! $category) {
+                $this->command->warn(sprintf("Category '%s' not found, skipping ingredients...", $categorySlug));
+
+                continue;
+            }
+
+            $this->command->info('Creating ingredients for: '.$category->getPath());
+
+            foreach ($categoryIngredients as $ingredientData) {
+                Ingredient::create([
+                    'name' => $ingredientData['name'],
+                    'category_id' => $category->id,
+                    'slug' => Str::slug($ingredientData['name']),
+                    'alternatives' => $ingredientData['alternatives'],
+                ]);
+
+                ++$createdCount;
+            }
         }
 
         $this->command->info('Ingredient seeding completed!');
-        $this->command->info('Created:');
-        $this->command->info('- ' . IngredientCategory::count() . ' ingredient categories');
-        $this->command->info('- ' . Ingredient::count() . ' ingredients');
+        $this->command->info(sprintf('Created %d ingredients across ', $createdCount).count($ingredients).' categories');
+
+        // Show summary by category hierarchy
+        $this->command->info("\nIngredients by Category:");
+        foreach (IngredientCategory::roots()->with(['children.ingredients'])->get() as $root) {
+            $this->command->info('• '.$root->name);
+            foreach ($root->children as $child) {
+                $count = $child->ingredients()->count();
+                $this->command->info(sprintf('  └── %s (%s ingredients)', $child->name, $count));
+            }
+        }
     }
 }

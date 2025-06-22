@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Recipe;
 use App\Models\Instruction;
+use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -47,11 +47,9 @@ final class InstructionFactory extends Factory
      */
     public function withIngredientIds(array $ingredientIds): static
     {
-        return $this->state(function (array $attributes) use ($ingredientIds): array {
-            return [
-                'ingredient_ids' => $ingredientIds,
-            ];
-        });
+        return $this->state(fn (array $attributes): array => [
+            'ingredient_ids' => $ingredientIds,
+        ]);
     }
 
     /**
@@ -76,14 +74,14 @@ final class InstructionFactory extends Factory
             'Dice the {vegetable} and set aside.',
             'Mince the {aromatics} finely.',
             'Season with {seasoning} to taste.',
-            
+
             // Cooking instructions
             'Add {ingredient} to the {cookware} and cook for {time} minutes.',
             'Sauté the {ingredient} until {doneness_indicator}.',
             'Bring the mixture to a {cooking_method}, then reduce heat.',
             'Stir in the {ingredient} and cook until {texture}.',
             'Cover and simmer for {time} until {doneness}.',
-            
+
             // Finishing instructions
             'Remove from heat and let cool for {time} minutes.',
             'Garnish with {garnish} before serving.',
@@ -110,10 +108,10 @@ final class InstructionFactory extends Factory
         ];
 
         $template = fake()->randomElement($instructionTemplates);
-        
+
         return str_replace(
-            array_keys($replacements), 
-            array_values($replacements), 
+            array_keys($replacements),
+            array_map('strval', array_values($replacements)),
             $template
         );
     }
@@ -127,7 +125,7 @@ final class InstructionFactory extends Factory
     {
         $count = fake()->numberBetween(1, 3);
         $ingredientIds = range(1, 20); // Assume we have 20 common ingredients
-        
+
         return fake()->randomElements($ingredientIds, $count);
     }
 }
